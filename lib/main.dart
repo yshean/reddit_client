@@ -59,41 +59,101 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
+  FeedFilter _selectedFilter = DEFAULT_FILTER;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Reddit'),
       ),
-      body: BlocBuilder<FeedBloc, FeedState>(
-        builder: (context, state) {
-          if (state is FeedLoadInProgress) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (state is FeedLoadSuccess) {
-            return ListView.builder(
-              itemBuilder: (context, index) {
-                if (index == state.feeds.length - NEXT_PAGE_THRESHOLD) {
-                  context.read<FeedBloc>().add(FeedRequested(loadMore: true));
-                }
-                if (index < state.feeds.length) {
-                  return ListTile(
-                    title: Text(state.feeds[index].title),
-                  );
-                }
-                return null;
-              },
-            );
-          }
-          if (state is FeedLoadFailure) {
-            return Center(
-              child: Text('Oops'),
-            );
-          }
-          return null;
-        },
+      body: Column(
+        children: [
+          Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width,
+            child: Center(
+              child: LayoutBuilder(
+                builder: (context, constraints) => ToggleButtons(
+                  borderRadius: BorderRadius.circular(5),
+                  constraints: BoxConstraints.expand(
+                    width: (constraints.maxWidth - 16) / 3,
+                    height: 26,
+                  ),
+                  children: [
+                    Text('Hot'),
+                    Text('New'),
+                    Text('Rising'),
+                  ],
+                  onPressed: (index) {
+                    switch (index) {
+                      case 0:
+                        setState(() {
+                          _selectedFilter = FeedFilter.HOT;
+                        });
+                        break;
+                      case 1:
+                        setState(() {
+                          _selectedFilter = FeedFilter.NEW;
+                        });
+                        break;
+                      case 2:
+                        setState(() {
+                          _selectedFilter = FeedFilter.RISING;
+                        });
+                        break;
+                      default:
+                        break;
+                    }
+                    context
+                        .read<FeedBloc>()
+                        .add(FeedRequested(filter: _selectedFilter));
+                  },
+                  isSelected: [
+                    _selectedFilter == FeedFilter.HOT,
+                    _selectedFilter == FeedFilter.NEW,
+                    _selectedFilter == FeedFilter.RISING,
+                  ],
+                ),
+              ),
+            ),
+          ),
+          BlocBuilder<FeedBloc, FeedState>(
+            builder: (context, state) {
+              if (state is FeedLoadInProgress) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (state is FeedLoadSuccess) {
+                return Expanded(
+                  child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      if (index == state.feeds.length - NEXT_PAGE_THRESHOLD) {
+                        context.read<FeedBloc>().add(FeedRequested(
+                              loadMore: true,
+                              filter: _selectedFilter,
+                            ));
+                      }
+                      if (index < state.feeds.length) {
+                        return ListTile(
+                          title: Text(state.feeds[index].title),
+                        );
+                      }
+                      return null;
+                    },
+                  ),
+                );
+              }
+              if (state is FeedLoadFailure) {
+                return Center(
+                  child: Text('Oops'),
+                );
+              }
+              return null;
+            },
+          ),
+        ],
       ),
     );
   }

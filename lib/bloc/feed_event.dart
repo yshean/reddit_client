@@ -1,6 +1,6 @@
 part of 'feed_bloc.dart';
 
-enum FeedFilter { TOP, HOT, NEW }
+enum FeedFilter { BEST, HOT, NEW, TOP, RISING }
 
 abstract class FeedEvent extends Equatable {
   const FeedEvent();
@@ -18,7 +18,7 @@ class FeedRequested extends FeedEvent {
   FeedRequested({
     this.subreddit,
     this.limit = 20,
-    this.filter = FeedFilter.NEW,
+    this.filter = DEFAULT_FILTER,
     this.loadMore = false,
   });
 

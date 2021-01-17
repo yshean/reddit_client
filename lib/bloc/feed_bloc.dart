@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:draw/draw.dart';
 import 'package:equatable/equatable.dart';
+import 'package:reddit_client/constants.dart';
 
 import '../repositories/index.dart';
 
@@ -30,8 +31,13 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
 
   Stream<FeedState> _mapFeedRequestedToState(FeedRequested event) async* {
     _feedSubscription?.cancel();
+    if (!(event.loadMore)) {
+      _contents.clear();
+      yield FeedLoadInProgress();
+    }
     _feedSubscription = _feedRepository
-        .getHotFeed(
+        .getFeed(
+            filter: event.filter,
             limit: event.limit,
             after: event.loadMore ? _contents.last.fullname : null)
         .listen((content) {
