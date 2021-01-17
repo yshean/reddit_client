@@ -23,7 +23,12 @@ class FeedRequested extends FeedEvent {
   });
 
   @override
-  List<Object> get props => [subreddit, limit, filter, loadMore];
+  List<Object> get props => [
+        subreddit,
+        limit,
+        filter,
+        loadMore,
+      ];
 }
 
 class FeedLoaded extends FeedEvent {
@@ -33,4 +38,23 @@ class FeedLoaded extends FeedEvent {
 
   @override
   List<Object> get props => [content];
+}
+
+class FeedRefreshRequested extends FeedEvent {
+  final String subreddit;
+  final int limit;
+  final FeedFilter filter;
+
+  FeedRefreshRequested({
+    this.subreddit,
+    this.limit = 20,
+    this.filter = DEFAULT_FILTER,
+  });
+
+  @override
+  List<Object> get props => [
+        subreddit,
+        limit,
+        filter,
+      ];
 }

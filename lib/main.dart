@@ -41,8 +41,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Reddit Client',
       home: feedRepository == null
           ? Scaffold(
-              appBar: AppBar(title: Text('Reddit')),
-              body: Text('Initialising repository'),
+              body: Center(child: CircularProgressIndicator()),
             )
           : BlocProvider(
               create: (context) =>

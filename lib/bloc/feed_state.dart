@@ -26,3 +26,5 @@ class FeedLoadFailure extends FeedState {
   @override
   List<Object> get props => [error];
 }
+
+class FeedRefreshInProgress extends FeedState {}

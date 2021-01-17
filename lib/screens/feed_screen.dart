@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/bloc/feed_bloc.dart';
@@ -12,6 +14,13 @@ class FeedScreen extends StatefulWidget {
 
 class _FeedScreenState extends State<FeedScreen> {
   FeedFilter _selectedFilter = DEFAULT_FILTER;
+  Completer<void> _refreshCompleter;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshCompleter = Completer<void>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +38,14 @@ class _FeedScreenState extends State<FeedScreen> {
               });
             },
           ),
-          BlocBuilder<FeedBloc, FeedState>(
+          BlocConsumer<FeedBloc, FeedState>(
+            listener: (context, state) {
+              if (state is FeedLoadSuccess) {
+                _refreshCompleter?.complete();
+                _refreshCompleter = Completer();
+              }
+            },
+            buildWhen: (_, state) => !(state is FeedRefreshInProgress),
             builder: (context, state) {
               if (state is FeedLoadInProgress) {
                 return Center(
@@ -38,32 +54,40 @@ class _FeedScreenState extends State<FeedScreen> {
               }
               if (state is FeedLoadSuccess) {
                 return Expanded(
-                  child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      if (index == state.feeds.length - NEXT_PAGE_THRESHOLD) {
-                        context.read<FeedBloc>().add(FeedRequested(
-                              loadMore: true,
-                              filter: _selectedFilter,
-                            ));
-                      }
-                      if (index < state.feeds.length) {
-                        final currentFeed = state.feeds[index];
-                        return PostCard(
-                          title: currentFeed.title,
-                          subreddit: currentFeed.subreddit.displayName,
-                          author: currentFeed.author,
-                          postedAt: currentFeed.createdUtc,
-                          commentCount: currentFeed.numComments,
-                          upvotes: currentFeed.upvotes,
-                          imagePreviewSrc: currentFeed.preview.isEmpty
-                              ? null
-                              : currentFeed
-                                  .preview.first?.resolutions?.first?.url
-                                  ?.toString(),
-                        );
-                      }
-                      return null;
+                  child: RefreshIndicator(
+                    onRefresh: () {
+                      context
+                          .read<FeedBloc>()
+                          .add(FeedRefreshRequested(filter: _selectedFilter));
+                      return _refreshCompleter.future;
                     },
+                    child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        if (index == state.feeds.length - NEXT_PAGE_THRESHOLD) {
+                          context.read<FeedBloc>().add(FeedRequested(
+                                loadMore: true,
+                                filter: _selectedFilter,
+                              ));
+                        }
+                        if (index < state.feeds.length) {
+                          final currentFeed = state.feeds[index];
+                          return PostCard(
+                            title: currentFeed.title,
+                            subreddit: currentFeed.subreddit.displayName,
+                            author: currentFeed.author,
+                            postedAt: currentFeed.createdUtc,
+                            commentCount: currentFeed.numComments,
+                            upvotes: currentFeed.upvotes,
+                            imagePreviewSrc: currentFeed.preview.isEmpty
+                                ? null
+                                : currentFeed
+                                    .preview.first?.resolutions?.first?.url
+                                    ?.toString(),
+                          );
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                 );
               }
