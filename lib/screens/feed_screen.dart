@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/bloc/feed_bloc.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/widgets/feed_switcher.dart';
+import 'package:reddit_client/widgets/post_card.dart';
 
 class FeedScreen extends StatefulWidget {
   @override
@@ -46,8 +47,19 @@ class _FeedScreenState extends State<FeedScreen> {
                             ));
                       }
                       if (index < state.feeds.length) {
-                        return ListTile(
-                          title: Text(state.feeds[index].title),
+                        final currentFeed = state.feeds[index];
+                        return PostCard(
+                          title: currentFeed.title,
+                          subreddit: currentFeed.subreddit.displayName,
+                          author: currentFeed.author,
+                          postedAt: currentFeed.createdUtc,
+                          commentCount: currentFeed.numComments,
+                          upvotes: currentFeed.upvotes,
+                          imagePreviewSrc: currentFeed.preview.isEmpty
+                              ? null
+                              : currentFeed
+                                  .preview.first?.resolutions?.first?.url
+                                  ?.toString(),
                         );
                       }
                       return null;

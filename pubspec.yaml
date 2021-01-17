@@ -16,7 +16,8 @@ dependencies:
   equatable: null
   flutter_bloc: null
   http: null
-  uuid:
+  timeago: ^2.0.29
+  uuid: null
 
 dev_dependencies:
   flutter_test:
