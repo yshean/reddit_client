@@ -62,12 +62,21 @@ class _FeedScreenState extends State<FeedScreen> {
                       return _refreshCompleter.future;
                     },
                     child: ListView.builder(
+                      itemCount: state.feeds.length + 1,
                       itemBuilder: (context, index) {
                         if (index == state.feeds.length - NEXT_PAGE_THRESHOLD) {
                           context.read<FeedBloc>().add(FeedRequested(
                                 loadMore: true,
                                 filter: _selectedFilter,
                               ));
+                        }
+                        if (index == state.feeds.length) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
                         }
                         if (index < state.feeds.length) {
                           final currentFeed = state.feeds[index];

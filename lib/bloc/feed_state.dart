@@ -10,12 +10,13 @@ abstract class FeedState extends Equatable {
 class FeedLoadInProgress extends FeedState {}
 
 class FeedLoadSuccess extends FeedState {
+  final DateTime updatedAt;
   final List<Submission> feeds;
 
-  FeedLoadSuccess(this.feeds);
+  FeedLoadSuccess(this.updatedAt, this.feeds);
 
   @override
-  List<Object> get props => [feeds];
+  List<Object> get props => [updatedAt, feeds];
 }
 
 class FeedLoadFailure extends FeedState {

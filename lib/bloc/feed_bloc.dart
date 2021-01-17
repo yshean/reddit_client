@@ -24,7 +24,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     if (event is FeedRequested) {
       yield* _mapFeedRequestedToState(event);
     } else if (event is FeedLoaded) {
-      yield FeedLoadSuccess(event.content);
+      yield FeedLoadSuccess(event.updatedAt, event.content);
     } else if (event is FeedRefreshRequested) {
       yield* _mapFeedRefreshRequestedToState(event);
     }
@@ -47,7 +47,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
         _contents.add(content);
       },
       onDone: () {
-        add(FeedLoaded(_contents));
+        add(FeedLoaded(DateTime.now(), _contents));
       },
     );
   }
@@ -67,7 +67,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
         _contents.add(content);
       },
       onDone: () {
-        add(FeedLoaded(_contents));
+        add(FeedLoaded(DateTime.now(), _contents));
       },
     );
   }
