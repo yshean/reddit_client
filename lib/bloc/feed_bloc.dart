@@ -24,7 +24,6 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     if (event is FeedRequested) {
       yield* _mapFeedRequestedToState(event);
     } else if (event is FeedLoaded) {
-      print('mapEventToState');
       yield FeedLoadSuccess(event.content);
     }
   }

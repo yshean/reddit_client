@@ -69,54 +69,13 @@ class _FeedScreenState extends State<FeedScreen> {
       ),
       body: Column(
         children: [
-          Container(
-            height: 50,
-            width: MediaQuery.of(context).size.width,
-            child: Center(
-              child: LayoutBuilder(
-                builder: (context, constraints) => ToggleButtons(
-                  borderRadius: BorderRadius.circular(5),
-                  constraints: BoxConstraints.expand(
-                    width: (constraints.maxWidth - 16) / 3,
-                    height: 26,
-                  ),
-                  children: [
-                    Text('Hot'),
-                    Text('New'),
-                    Text('Rising'),
-                  ],
-                  onPressed: (index) {
-                    switch (index) {
-                      case 0:
-                        setState(() {
-                          _selectedFilter = FeedFilter.HOT;
-                        });
-                        break;
-                      case 1:
-                        setState(() {
-                          _selectedFilter = FeedFilter.NEW;
-                        });
-                        break;
-                      case 2:
-                        setState(() {
-                          _selectedFilter = FeedFilter.RISING;
-                        });
-                        break;
-                      default:
-                        break;
-                    }
-                    context
-                        .read<FeedBloc>()
-                        .add(FeedRequested(filter: _selectedFilter));
-                  },
-                  isSelected: [
-                    _selectedFilter == FeedFilter.HOT,
-                    _selectedFilter == FeedFilter.NEW,
-                    _selectedFilter == FeedFilter.RISING,
-                  ],
-                ),
-              ),
-            ),
+          FeedSwitcher(
+            selectedFilter: _selectedFilter,
+            setSelectedFilter: (filter) {
+              setState(() {
+                _selectedFilter = filter;
+              });
+            },
           ),
           BlocBuilder<FeedBloc, FeedState>(
             builder: (context, state) {
@@ -154,6 +113,64 @@ class _FeedScreenState extends State<FeedScreen> {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class FeedSwitcher extends StatelessWidget {
+  const FeedSwitcher({
+    Key key,
+    @required this.selectedFilter,
+    @required this.setSelectedFilter,
+  }) : super(key: key);
+
+  final FeedFilter selectedFilter;
+  final void Function(FeedFilter) setSelectedFilter;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      width: MediaQuery.of(context).size.width,
+      child: Center(
+        child: LayoutBuilder(
+          builder: (context, constraints) => ToggleButtons(
+            borderRadius: BorderRadius.circular(5),
+            constraints: BoxConstraints.expand(
+              width: (constraints.maxWidth - 16) / 3,
+              height: 26,
+            ),
+            children: [
+              Text('Hot'),
+              Text('New'),
+              Text('Rising'),
+            ],
+            onPressed: (index) {
+              switch (index) {
+                case 0:
+                  setSelectedFilter(FeedFilter.HOT);
+                  break;
+                case 1:
+                  setSelectedFilter(FeedFilter.NEW);
+                  break;
+                case 2:
+                  setSelectedFilter(FeedFilter.RISING);
+                  break;
+                default:
+                  break;
+              }
+              context
+                  .read<FeedBloc>()
+                  .add(FeedRequested(filter: selectedFilter));
+            },
+            isSelected: [
+              selectedFilter == FeedFilter.HOT,
+              selectedFilter == FeedFilter.NEW,
+              selectedFilter == FeedFilter.RISING,
+            ],
+          ),
+        ),
       ),
     );
   }
