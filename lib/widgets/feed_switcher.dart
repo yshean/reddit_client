@@ -34,19 +34,25 @@ class FeedSwitcher extends StatelessWidget {
               switch (index) {
                 case 0:
                   setSelectedFilter(FeedFilter.HOT);
+                  context
+                      .read<FeedBloc>()
+                      .add(FeedRequested(filter: FeedFilter.HOT));
                   break;
                 case 1:
                   setSelectedFilter(FeedFilter.NEW);
+                  context
+                      .read<FeedBloc>()
+                      .add(FeedRequested(filter: FeedFilter.NEW));
                   break;
                 case 2:
                   setSelectedFilter(FeedFilter.RISING);
+                  context
+                      .read<FeedBloc>()
+                      .add(FeedRequested(filter: FeedFilter.RISING));
                   break;
                 default:
                   break;
               }
-              context
-                  .read<FeedBloc>()
-                  .add(FeedRequested(filter: selectedFilter));
             },
             isSelected: [
               selectedFilter == FeedFilter.HOT,
