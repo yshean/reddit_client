@@ -2,8 +2,8 @@ import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/bloc/feed_bloc.dart';
-import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/repositories/index.dart';
+import 'package:reddit_client/screens/feed_screen.dart';
 import 'package:reddit_client/secrets.dart';
 import 'package:reddit_client/simple_bloc_observer.dart';
 import 'package:uuid/uuid.dart';
@@ -42,136 +42,13 @@ class _MyAppState extends State<MyApp> {
       home: feedRepository == null
           ? Scaffold(
               appBar: AppBar(title: Text('Reddit')),
-              body: Text('Failed to create repository'),
+              body: Text('Initialising repository'),
             )
           : BlocProvider(
               create: (context) =>
                   FeedBloc(feedRepository)..add(FeedRequested()),
               child: FeedScreen(),
             ),
-    );
-  }
-}
-
-class FeedScreen extends StatefulWidget {
-  @override
-  _FeedScreenState createState() => _FeedScreenState();
-}
-
-class _FeedScreenState extends State<FeedScreen> {
-  FeedFilter _selectedFilter = DEFAULT_FILTER;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Reddit'),
-      ),
-      body: Column(
-        children: [
-          FeedSwitcher(
-            selectedFilter: _selectedFilter,
-            setSelectedFilter: (filter) {
-              setState(() {
-                _selectedFilter = filter;
-              });
-            },
-          ),
-          BlocBuilder<FeedBloc, FeedState>(
-            builder: (context, state) {
-              if (state is FeedLoadInProgress) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              if (state is FeedLoadSuccess) {
-                return Expanded(
-                  child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      if (index == state.feeds.length - NEXT_PAGE_THRESHOLD) {
-                        context.read<FeedBloc>().add(FeedRequested(
-                              loadMore: true,
-                              filter: _selectedFilter,
-                            ));
-                      }
-                      if (index < state.feeds.length) {
-                        return ListTile(
-                          title: Text(state.feeds[index].title),
-                        );
-                      }
-                      return null;
-                    },
-                  ),
-                );
-              }
-              if (state is FeedLoadFailure) {
-                return Center(
-                  child: Text('Oops'),
-                );
-              }
-              return null;
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class FeedSwitcher extends StatelessWidget {
-  const FeedSwitcher({
-    Key key,
-    @required this.selectedFilter,
-    @required this.setSelectedFilter,
-  }) : super(key: key);
-
-  final FeedFilter selectedFilter;
-  final void Function(FeedFilter) setSelectedFilter;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      width: MediaQuery.of(context).size.width,
-      child: Center(
-        child: LayoutBuilder(
-          builder: (context, constraints) => ToggleButtons(
-            borderRadius: BorderRadius.circular(5),
-            constraints: BoxConstraints.expand(
-              width: (constraints.maxWidth - 16) / 3,
-              height: 26,
-            ),
-            children: [
-              Text('Hot'),
-              Text('New'),
-              Text('Rising'),
-            ],
-            onPressed: (index) {
-              switch (index) {
-                case 0:
-                  setSelectedFilter(FeedFilter.HOT);
-                  break;
-                case 1:
-                  setSelectedFilter(FeedFilter.NEW);
-                  break;
-                case 2:
-                  setSelectedFilter(FeedFilter.RISING);
-                  break;
-                default:
-                  break;
-              }
-              context
-                  .read<FeedBloc>()
-                  .add(FeedRequested(filter: selectedFilter));
-            },
-            isSelected: [
-              selectedFilter == FeedFilter.HOT,
-              selectedFilter == FeedFilter.NEW,
-              selectedFilter == FeedFilter.RISING,
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
