@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:reddit_client/bloc/feed_bloc.dart';
 import 'package:reddit_client/constants.dart';
+import 'package:reddit_client/feed/feed_bloc.dart';
 import 'package:reddit_client/models/post.dart';
 import 'package:reddit_client/screens/post_details.dart';
 import 'package:reddit_client/widgets/feed_switcher.dart';

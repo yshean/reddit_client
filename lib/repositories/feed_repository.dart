@@ -1,5 +1,5 @@
 import 'package:draw/draw.dart';
-import 'package:reddit_client/bloc/feed_bloc.dart';
+import 'package:reddit_client/feed/feed_bloc.dart';
 
 class NotImplemented implements Exception {}
 

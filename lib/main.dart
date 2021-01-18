@@ -1,7 +1,7 @@
 import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:reddit_client/bloc/feed_bloc.dart';
+import 'package:reddit_client/feed/feed_bloc.dart';
 import 'package:reddit_client/repositories/index.dart';
 import 'package:reddit_client/screens/feed_screen.dart';
 import 'package:reddit_client/secrets.dart';

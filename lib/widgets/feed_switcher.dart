@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:reddit_client/bloc/feed_bloc.dart';
+import 'package:reddit_client/feed/feed_bloc.dart';
 
 class FeedSwitcher extends StatelessWidget {
   const FeedSwitcher({
