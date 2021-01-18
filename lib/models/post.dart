@@ -17,6 +17,8 @@ class Post extends Equatable {
   final String selfText;
   final Uri url;
   final String domain;
+  final CommentForest Function() getComments;
+  final Future<CommentForest> Function({CommentSortType sort}) refreshComments;
 
   Post({
     this.title,
@@ -31,6 +33,8 @@ class Post extends Equatable {
     this.selfText,
     this.url,
     this.domain,
+    this.getComments,
+    this.refreshComments,
   });
 
   factory Post.fromSubmission(Submission submission) => Post(
@@ -49,6 +53,8 @@ class Post extends Equatable {
         selfText: submission.selftext,
         url: submission.url,
         domain: submission.domain,
+        getComments: () => submission.comments,
+        refreshComments: submission.refreshComments,
       );
 
   Post copyWith({
