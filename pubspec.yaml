@@ -12,6 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  chewie: ^0.12.1+1
   draw: null
   equatable: null
   flutter_bloc: null
@@ -21,6 +22,7 @@ dependencies:
   timeago: ^2.0.29
   url_launcher: ^5.7.10
   uuid: null
+  video_player: ^1.0.1
 
 dev_dependencies:
   flutter_test:

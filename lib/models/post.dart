@@ -15,6 +15,7 @@ class Post extends Equatable {
   final PostType postType;
   final String thumbnailSrc;
   final String selfText;
+  final String url;
 
   Post({
     this.title,
@@ -27,6 +28,7 @@ class Post extends Equatable {
     this.postType,
     this.thumbnailSrc,
     this.selfText,
+    this.url,
   });
 
   factory Post.fromSubmission(Submission submission) => Post(
@@ -43,6 +45,7 @@ class Post extends Equatable {
                 ? null
                 : submission.thumbnail.toString(),
         selfText: submission.selftext,
+        url: submission.url?.toString(),
       );
 
   Post copyWith({
@@ -56,6 +59,7 @@ class Post extends Equatable {
     PostType postType,
     String thumbnailSrc,
     String selfText,
+    String url,
   }) {
     return Post(
       title: title ?? this.title,
@@ -68,6 +72,7 @@ class Post extends Equatable {
       postType: postType ?? this.postType,
       thumbnailSrc: thumbnailSrc ?? this.thumbnailSrc,
       selfText: selfText ?? this.selfText,
+      url: url ?? this.url,
     );
   }
 
@@ -83,6 +88,7 @@ class Post extends Equatable {
       'postType': postType?.toString(),
       'thumbnailSrc': thumbnailSrc,
       'selfText': selfText,
+      'url': url,
     };
   }
 
@@ -100,6 +106,7 @@ class Post extends Equatable {
       postType: getPostTypeFromString(map['postType']),
       thumbnailSrc: map['thumbnailSrc'],
       selfText: map['selfText'],
+      url: map['url'],
     );
   }
 
@@ -123,6 +130,7 @@ class Post extends Equatable {
       postType,
       thumbnailSrc,
       selfText,
+      url,
     ];
   }
 }
