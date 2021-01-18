@@ -18,6 +18,10 @@ class PostContent extends StatelessWidget {
       return SelfPostContent(text: post.selfText);
     if (post.postType == PostType.Image)
       return ImageContent(url: post.url.toString());
+    if (post.postType == PostType.ImgurImage) {
+      String imageId = post.url.path.substring(1);
+      return ImageContent(url: "https://i.imgur.com/$imageId.jpg");
+    }
     if (post.postType == PostType.Video) return VideoContent(post: post);
     if (post.postType == PostType.GifVideo) return GifVideoContent(post: post);
     return Text('Unimplemented PostType: ${post.postType}');
