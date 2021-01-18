@@ -12,16 +12,10 @@ class PostContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget widget = Text('Unimplemented PostType: ${post.postType}');
     if (post.postType == PostType.SelfPost)
-      widget = SelfPostContent(text: post.selfText);
-    if (post.postType == PostType.Video) widget = VideoContent(post: post);
-    if (post.postType == PostType.GifVideo)
-      widget = GifVideoContent(post: post);
-    return Column(
-      children: [
-        widget,
-      ],
-    );
+      return SelfPostContent(text: post.selfText);
+    if (post.postType == PostType.Video) return VideoContent(post: post);
+    if (post.postType == PostType.GifVideo) return GifVideoContent(post: post);
+    return Text('Unimplemented PostType: ${post.postType}');
   }
 }
