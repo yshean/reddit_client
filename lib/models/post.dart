@@ -16,6 +16,7 @@ class Post extends Equatable {
   final String thumbnailSrc;
   final String selfText;
   final Uri url;
+  final String domain;
 
   Post({
     this.title,
@@ -29,6 +30,7 @@ class Post extends Equatable {
     this.thumbnailSrc,
     this.selfText,
     this.url,
+    this.domain,
   });
 
   factory Post.fromSubmission(Submission submission) => Post(
@@ -46,6 +48,7 @@ class Post extends Equatable {
                 : submission.thumbnail.toString(),
         selfText: submission.selftext,
         url: submission.url,
+        domain: submission.domain,
       );
 
   Post copyWith({
@@ -60,6 +63,7 @@ class Post extends Equatable {
     String thumbnailSrc,
     String selfText,
     Uri url,
+    String domain,
   }) {
     return Post(
       title: title ?? this.title,
@@ -73,6 +77,7 @@ class Post extends Equatable {
       thumbnailSrc: thumbnailSrc ?? this.thumbnailSrc,
       selfText: selfText ?? this.selfText,
       url: url ?? this.url,
+      domain: domain ?? this.domain,
     );
   }
 
@@ -89,6 +94,7 @@ class Post extends Equatable {
       'thumbnailSrc': thumbnailSrc,
       'selfText': selfText,
       // 'url': url?.toMap(),
+      'domain': domain,
     };
   }
 
@@ -107,6 +113,7 @@ class Post extends Equatable {
       thumbnailSrc: map['thumbnailSrc'],
       selfText: map['selfText'],
       // url: Uri.fromMap(map['url']),
+      domain: map['domain'],
     );
   }
 
@@ -131,6 +138,7 @@ class Post extends Equatable {
       thumbnailSrc,
       selfText,
       url,
+      domain,
     ];
   }
 }

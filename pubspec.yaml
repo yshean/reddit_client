@@ -20,6 +20,7 @@ dependencies:
   flutter_markdown: ^0.5.2
   html_unescape: ^1.0.2
   http: null
+  metadata_fetch: ^0.3.4
   timeago: ^2.0.29
   url_launcher: ^5.7.10
   uuid: null
