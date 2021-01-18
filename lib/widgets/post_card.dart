@@ -8,7 +8,8 @@ class PostCard extends StatelessWidget {
   final DateTime postedAt;
   final int commentCount;
   final int upvotes;
-  final String imagePreviewSrc;
+  final Widget Function(BuildContext) detailsBuilder;
+  final String thumbnailSrc;
 
   const PostCard({
     Key key,
@@ -18,7 +19,8 @@ class PostCard extends StatelessWidget {
     @required this.postedAt,
     @required this.commentCount,
     @required this.upvotes,
-    this.imagePreviewSrc,
+    @required this.detailsBuilder,
+    this.thumbnailSrc,
   }) : super(key: key);
 
   @override
@@ -50,38 +52,45 @@ class PostCard extends StatelessWidget {
               ],
             ),
             SizedBox(height: 4),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: detailsBuilder,
+                ));
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'r/$subreddit',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
+                        SizedBox(height: 8),
+                        Text(
+                          'r/$subreddit',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                imagePreviewSrc == null
-                    ? SizedBox.shrink()
-                    : Image.network(imagePreviewSrc, scale: 1.5),
-              ],
+                  thumbnailSrc == null
+                      ? SizedBox.shrink()
+                      : Image.network(thumbnailSrc, scale: 1.5),
+                ],
+              ),
             ),
             SizedBox(height: 12),
             Row(

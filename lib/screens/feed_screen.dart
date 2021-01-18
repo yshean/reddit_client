@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/bloc/feed_bloc.dart';
 import 'package:reddit_client/constants.dart';
+import 'package:reddit_client/models/post.dart';
+import 'package:reddit_client/screens/post_details.dart';
 import 'package:reddit_client/widgets/feed_switcher.dart';
 import 'package:reddit_client/widgets/post_card.dart';
 
@@ -79,19 +81,16 @@ class _FeedScreenState extends State<FeedScreen> {
                           );
                         }
                         if (index < state.feeds.length) {
-                          final currentFeed = state.feeds[index];
+                          final post = Post.fromSubmission(state.feeds[index]);
                           return PostCard(
-                            title: currentFeed.title,
-                            subreddit: currentFeed.subreddit.displayName,
-                            author: currentFeed.author,
-                            postedAt: currentFeed.createdUtc,
-                            commentCount: currentFeed.numComments,
-                            upvotes: currentFeed.upvotes,
-                            imagePreviewSrc: currentFeed.preview.isEmpty
-                                ? null
-                                : currentFeed
-                                    .preview.first?.resolutions?.first?.url
-                                    ?.toString(),
+                            title: post.title,
+                            subreddit: post.subreddit,
+                            author: post.author,
+                            postedAt: post.postedAt,
+                            commentCount: post.commentCount,
+                            upvotes: post.upvotes,
+                            thumbnailSrc: post.thumbnailSrc,
+                            detailsBuilder: (context) => PostDetails(post),
                           );
                         }
                         return null;

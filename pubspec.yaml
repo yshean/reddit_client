@@ -15,8 +15,11 @@ dependencies:
   draw: null
   equatable: null
   flutter_bloc: null
+  flutter_markdown: ^0.5.2
+  html_unescape: ^1.0.2
   http: null
   timeago: ^2.0.29
+  url_launcher: ^5.7.10
   uuid: null
 
 dev_dependencies:
