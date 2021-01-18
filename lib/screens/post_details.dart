@@ -12,24 +12,32 @@ class PostDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: ListView(
-        children: [
-          // Post info
-          PostInfo(post),
-          PostContent(post),
-          // Comments filter
-          Row(
-            children: [
-              Text('BEST'),
-            ],
-          ),
-          // Comments listview
-          Column(
-            children: [
-              Text('Comments'),
-            ],
-          ),
-        ],
+      // body: PostContent(post),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Text(
+              post.title,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            PostContent(post),
+            PostInfo(post),
+            // Comments filter
+            Row(
+              children: [
+                Text('BEST'),
+              ],
+            ),
+            // Comments listview
+            Column(
+              children: [
+                Text('Comments'),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

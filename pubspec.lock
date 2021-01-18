@@ -161,7 +161,7 @@ packages:
       name: draw
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.2+1"
+    version: "0.9.1"
   equatable:
     dependency: "direct main"
     description:
@@ -246,7 +246,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.11.3+17"
+    version: "0.12.2"
   http_parser:
     dependency: transitive
     description:
@@ -539,6 +539,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.4+1"
+  video_provider:
+    dependency: "direct main"
+    description:
+      name: video_provider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.3+2"
   wakelock:
     dependency: transitive
     description:

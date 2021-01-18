@@ -12,12 +12,6 @@ class PostInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          post.title,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
         Row(
           children: [
             Text(

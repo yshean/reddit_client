@@ -23,6 +23,7 @@ dependencies:
   url_launcher: ^5.7.10
   uuid: null
   video_player: ^1.0.1
+  video_provider: ^1.2.3+2
 
 dev_dependencies:
   flutter_test:
