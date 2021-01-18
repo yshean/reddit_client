@@ -3,6 +3,7 @@ import 'package:reddit_client/models/post.dart';
 import 'package:reddit_client/utils/get_post_type.dart';
 import 'package:reddit_client/widgets/post_content/gfycat_video_content.dart';
 import 'package:reddit_client/widgets/post_content/link_content.dart';
+import 'package:reddit_client/widgets/post_content/tweet_content.dart';
 import 'package:reddit_client/widgets/post_content/youtube_video_content.dart';
 
 import 'gif_video_content.dart';
@@ -20,6 +21,8 @@ class PostContent extends StatelessWidget {
     if (post.postType == PostType.SelfPost)
       return SelfPostContent(text: post.selfText);
     if (post.postType == PostType.Link) return LinkContent(post: post);
+    if (post.postType == PostType.Tweet)
+      return TweetContent(url: post.url.toString());
     if (post.postType == PostType.Image)
       return ImageContent(url: post.url.toString());
     if (post.postType == PostType.ImgurImage) {
