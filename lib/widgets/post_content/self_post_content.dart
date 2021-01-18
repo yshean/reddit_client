@@ -9,17 +9,21 @@ class SelfPostContent extends StatelessWidget {
 
   const SelfPostContent({Key key, this.text}) : super(key: key);
 
+  /// Dart is not planning to add support for Unicode whitespace character
+  /// See https://github.com/dart-lang/sdk/issues/14071
+  /// This is a temporary workaround to convert it to a single line break
+  String convertWhiteSpaceChar(String text) =>
+      text.replaceAll("&#x200B;", "\n");
+
   @override
   Widget build(BuildContext context) {
     return text.isNotEmpty
         ? Container(
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.all(10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
             ),
             child: MarkdownBody(
-              data: HtmlUnescape().convert(text),
+              data: convertWhiteSpaceChar(HtmlUnescape().convert(text)),
               onTapLink: (text, link, title) => launch(link),
               styleSheet: customMarkdownStyleSheet,
             ),

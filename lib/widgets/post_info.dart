@@ -15,23 +15,30 @@ class PostInfo extends StatelessWidget {
         Row(
           children: [
             Text(
-              'by ${post.author}',
+              'by ${post.author} in ',
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 12,
               ),
             ),
-            SizedBox(width: 8),
             Text(
-              '${post.commentCount} comments',
+              'r/${post.subreddit}',
               style: TextStyle(
                 color: Colors.grey,
+                fontWeight: FontWeight.w600,
                 fontSize: 12,
               ),
             ),
-            SizedBox(width: 8),
             Text(
-              timeago.format(post.postedAt),
+              ' • ',
+              style: TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
+            Text(
+              timeago.format(post.postedAt, locale: 'en_short'),
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 12,
@@ -39,14 +46,7 @@ class PostInfo extends StatelessWidget {
             ),
           ],
         ),
-        Text(
-          'r/${post.subreddit}',
-          style: TextStyle(
-            color: Colors.grey,
-            fontWeight: FontWeight.w600,
-            fontSize: 12,
-          ),
-        ),
+        SizedBox(height: 12),
         Row(
           children: [
             Icon(

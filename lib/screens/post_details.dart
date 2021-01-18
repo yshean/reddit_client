@@ -14,29 +14,38 @@ class PostDetails extends StatelessWidget {
       appBar: AppBar(),
       // body: PostContent(post),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Text(
-              post.title,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                post.title,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16.0,
+                ),
               ),
-            ),
-            PostContent(post),
-            PostInfo(post),
-            // Comments filter
-            Row(
-              children: [
-                Text('BEST'),
-              ],
-            ),
-            // Comments listview
-            Column(
-              children: [
-                Text('Comments'),
-              ],
-            ),
-          ],
+              SizedBox(height: 8.0),
+              PostContent(post),
+              SizedBox(height: 8.0),
+              PostInfo(post),
+              // Comments filter
+              SizedBox(height: 4.0),
+              Divider(),
+              // Row(
+              //   children: [
+              //     Text('BEST'),
+              //   ],
+              // ),
+              // Comments listview
+              Column(
+                children: [
+                  Text('Comments'),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
