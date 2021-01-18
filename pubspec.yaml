@@ -13,6 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
   chewie: ^0.12.1+1
+  dio: ^3.0.10
   draw: null
   equatable: null
   flutter_bloc: null
