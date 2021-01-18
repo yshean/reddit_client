@@ -25,6 +25,7 @@ dependencies:
   uuid: null
   video_player: ^1.0.1
   video_provider: ^1.2.3+2
+  youtube_player_flutter: ^7.0.0+7
 
 dev_dependencies:
   flutter_test:

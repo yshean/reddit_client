@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:reddit_client/models/post.dart';
 import 'package:reddit_client/utils/get_post_type.dart';
 import 'package:reddit_client/widgets/post_content/gfycat_video_content.dart';
+import 'package:reddit_client/widgets/post_content/youtube_video_content.dart';
 
 import 'gif_video_content.dart';
 import 'image_content.dart';
@@ -27,6 +28,8 @@ class PostContent extends StatelessWidget {
     if (post.postType == PostType.GifVideo) return GifVideoContent(post: post);
     if (post.postType == PostType.GfycatVideo)
       return GfycatVideoContent(url: post.url);
+    if (post.postType == PostType.YoutubeVideo)
+      return YoutubeVideoContent(url: post.url.toString());
     return Text('Unimplemented PostType: ${post.postType}');
   }
 }
