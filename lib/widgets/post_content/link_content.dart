@@ -37,7 +37,7 @@ class _LinkContentState extends State<LinkContent> {
             return GestureDetector(
               onTap: () => launch(widget.post.url.toString()),
               child: Container(
-                margin: EdgeInsets.all(8.0),
+                margin: EdgeInsets.symmetric(vertical: 8.0),
                 padding: EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
                   border: Border.all(
