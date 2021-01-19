@@ -37,14 +37,16 @@ class CommentList extends StatelessWidget {
               );
             }
           } else {
-            return Padding(
-              padding: const EdgeInsets.only(top: 15.0),
-              child: CircularProgressIndicator(
-                  // valueColor: AlwaysStoppedAnimation<Color>(
-                  //   redditOrange,
-                  // ),
-                  // backgroundColor: darkGreyColor,
-                  ),
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 15.0),
+                child: CircularProgressIndicator(
+                    // valueColor: AlwaysStoppedAnimation<Color>(
+                    //   redditOrange,
+                    // ),
+                    // backgroundColor: darkGreyColor,
+                    ),
+              ),
             );
           }
         },

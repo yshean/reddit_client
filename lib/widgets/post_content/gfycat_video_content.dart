@@ -57,14 +57,16 @@ class _GfycatVideoContentState extends State<GfycatVideoContent> {
             ]),
           );
         } else {
-          return Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: CircularProgressIndicator(
-                // valueColor: AlwaysStoppedAnimation<Color>(
-                //   redditOrange,
-                // ),
-                // backgroundColor: darkGreyColor,
-                ),
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: CircularProgressIndicator(
+                  // valueColor: AlwaysStoppedAnimation<Color>(
+                  //   redditOrange,
+                  // ),
+                  // backgroundColor: darkGreyColor,
+                  ),
+            ),
           );
         }
       },

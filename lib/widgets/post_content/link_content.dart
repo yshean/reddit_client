@@ -85,7 +85,7 @@ class _LinkContentState extends State<LinkContent> {
               ),
             );
           } else {
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           }
         });
   }

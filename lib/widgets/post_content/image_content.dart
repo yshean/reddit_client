@@ -11,17 +11,19 @@ class ImageContent extends StatelessWidget {
       url,
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
-        return Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: CircularProgressIndicator(
-            // valueColor: AlwaysStoppedAnimation<Color>(
-            //   redditOrange,
-            // ),
-            // backgroundColor: darkGreyColor,
-            value: loadingProgress.expectedTotalBytes != null
-                ? loadingProgress.cumulativeBytesLoaded /
-                    loadingProgress.expectedTotalBytes
-                : null,
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: CircularProgressIndicator(
+              // valueColor: AlwaysStoppedAnimation<Color>(
+              //   redditOrange,
+              // ),
+              // backgroundColor: darkGreyColor,
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes
+                  : null,
+            ),
           ),
         );
       },
