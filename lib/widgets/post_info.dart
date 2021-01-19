@@ -22,7 +22,7 @@ class PostInfo extends StatelessWidget {
               ),
             ),
             Text(
-              'r/${post.subreddit}',
+              'r/${post.subreddit.displayName}',
               style: TextStyle(
                 color: Colors.grey,
                 fontWeight: FontWeight.w600,
