@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
-import 'package:reddit_client/screens/post_details.dart';
 import 'package:reddit_client/widgets/feed_switcher.dart';
 import 'package:reddit_client/widgets/post_card.dart';
 
@@ -81,11 +80,7 @@ class _FeedScreenState extends State<FeedScreen> {
                         }
                         if (index < state.feeds.length) {
                           final submission = state.feeds[index];
-                          return PostCard(
-                            submission: submission,
-                            detailsBuilder: (context) =>
-                                PostDetails(submission),
-                          );
+                          return PostCard(submission: submission);
                         }
                         return null;
                       },

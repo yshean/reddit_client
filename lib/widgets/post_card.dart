@@ -1,18 +1,30 @@
 import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
+import 'package:reddit_client/screens/post_details.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class PostCard extends StatelessWidget {
+class PostCard extends StatefulWidget {
   final Submission submission;
-  final Widget Function(BuildContext) detailsBuilder;
+
+  const PostCard({Key key, this.submission}) : super(key: key);
+
+  @override
+  _PostCardState createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
+  Submission _submission;
+
+  @override
+  void initState() {
+    super.initState();
+    _submission = widget.submission;
+  }
 
   String get thumbnailSrc =>
-      submission.preview.isEmpty || submission.thumbnail.host == ''
+      _submission.preview.isEmpty || _submission.thumbnail.host == ''
           ? null
-          : submission.thumbnail.toString();
-
-  const PostCard({Key key, this.submission, this.detailsBuilder})
-      : super(key: key);
+          : _submission.thumbnail.toString();
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +38,7 @@ class PostCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  submission.author,
+                  _submission.author,
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: 12,
@@ -34,7 +46,7 @@ class PostCard extends StatelessWidget {
                 ),
                 SizedBox(width: 8),
                 Text(
-                  timeago.format(submission.createdUtc),
+                  timeago.format(_submission.createdUtc),
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: 12,
@@ -44,10 +56,14 @@ class PostCard extends StatelessWidget {
             ),
             SizedBox(height: 4),
             GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: detailsBuilder,
+              onTap: () async {
+                final updatedSubmission =
+                    await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => PostDetails(_submission),
                 ));
+                setState(() {
+                  _submission = updatedSubmission;
+                });
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,16 +74,19 @@ class PostCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          submission.title,
+                          _submission.title,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
+                            color: _submission.clicked
+                                ? Colors.grey
+                                : Colors.black,
                           ),
                         ),
                         SizedBox(height: 8),
                         Text(
-                          'r/${submission.subreddit.displayName}',
+                          'r/${_submission.subreddit.displayName}',
                           style: TextStyle(
                             color: Colors.grey,
                             fontWeight: FontWeight.w600,
@@ -96,7 +115,7 @@ class PostCard extends StatelessWidget {
                     ),
                     SizedBox(width: 4),
                     Text(
-                      submission.numComments.toString(),
+                      _submission.numComments.toString(),
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: 12,
@@ -113,7 +132,7 @@ class PostCard extends StatelessWidget {
                     ),
                     SizedBox(width: 4),
                     Text(
-                      submission.upvotes.toString(),
+                      _submission.upvotes.toString(),
                       style: TextStyle(
                         color: Colors.grey,
                         fontWeight: FontWeight.w600,

@@ -20,21 +20,29 @@ class _PostDetailsState extends State<PostDetails> {
   void initState() {
     super.initState();
     _post = widget.post;
+    refreshPost();
   }
+
+  Future<void> refreshPost() => widget.post.refresh().then((post) {
+        final Submission updatedPost = post.first;
+        updatedPost.refreshComments();
+        if (mounted)
+          setState(() {
+            _post = updatedPost;
+          });
+      });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: InkResponse(
+          child: Icon(Icons.arrow_back),
+          onTap: () => Navigator.of(context).pop(_post),
+        ),
+      ),
       body: RefreshIndicator(
-        onRefresh: () {
-          return widget.post.refresh().then((post) {
-            (post.first as Submission).refreshComments();
-            setState(() {
-              _post = post.first;
-            });
-          });
-        },
+        onRefresh: refreshPost,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
