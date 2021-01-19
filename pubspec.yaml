@@ -17,6 +17,7 @@ dependencies:
   draw: null
   equatable: null
   flutter_bloc: null
+  flutter_link_preview: ^1.5.6
   flutter_markdown: ^0.5.2
   html_unescape: ^1.0.2
   http: null

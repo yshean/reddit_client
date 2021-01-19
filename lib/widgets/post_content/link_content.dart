@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:metadata_fetch/metadata_fetch.dart';
+import 'package:flutter_link_preview/flutter_link_preview.dart';
 import 'package:reddit_client/models/post.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class LinkContent extends StatefulWidget {
   final Post post;
@@ -16,77 +14,88 @@ class LinkContent extends StatefulWidget {
 class _LinkContentState extends State<LinkContent> {
   Post get _post => widget.post;
 
-  Future<dynamic> _fetchMetadata() async {
-    // var data = await extract(_post.url.toString());
-    try {
-      var response = await http.get(_post.url.toString());
-      var document = responseToDocument(response);
-      var data = MetadataParser.parse(document);
-      return data;
-    } catch (e) {
-      print("Couldn't process ${_post.url.toString()}");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _fetchMetadata(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return GestureDetector(
-              onTap: () => launch(widget.post.url.toString()),
-              child: Container(
-                margin: EdgeInsets.symmetric(vertical: 8.0),
-                padding: EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    // color: blueColor,
-                    width: 2,
+    return FlutterLinkPreview(
+      url: _post.url.toString(),
+      bodyStyle: TextStyle(
+        fontSize: 18.0,
+      ),
+      titleStyle: TextStyle(
+        fontSize: 20.0,
+        fontWeight: FontWeight.bold,
+      ),
+      builder: (info) {
+        if (info is WebInfo) {
+          return SizedBox(
+            height: 350,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (info.image != null)
+                    Expanded(
+                        child: Image.network(
+                      info.image,
+                      width: double.maxFinite,
+                      fit: BoxFit.cover,
+                    )),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+                    child: Text(
+                      info.title,
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(5),
-                  // color: darkGreyColor,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Expanded(
-                      child: Icon(
-                        Icons.launch,
-                        // color: blueColor,
-                      ),
-                      flex: 1,
+                  if (info.description != null)
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(info.description),
                     ),
-                    VerticalDivider(
-                      thickness: 2,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            snapshot.data?.title ?? "Link",
-                            style: TextStyle(
-                              // color: redditOrange,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          Text(
-                            widget.post.domain,
-                            // style: TextStyle(color: lightGreyColor),
-                          ),
-                        ],
-                      ),
-                      flex: 3,
-                    ),
-                  ],
-                ),
+                ],
               ),
-            );
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        });
+            ),
+          );
+        }
+        if (info is WebImageInfo) {
+          return SizedBox(
+            height: 350,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              clipBehavior: Clip.antiAlias,
+              child: Image.network(
+                info.image,
+                fit: BoxFit.cover,
+                width: double.maxFinite,
+              ),
+            ),
+          );
+        } else if (info is WebVideoInfo) {
+          return SizedBox(
+            height: 350,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              clipBehavior: Clip.antiAlias,
+              child: Image.network(
+                info.image,
+                fit: BoxFit.cover,
+                width: double.maxFinite,
+              ),
+            ),
+          );
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
   }
 }
