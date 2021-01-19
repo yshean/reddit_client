@@ -6,58 +6,132 @@ import 'package:reddit_client/utils/custom_markdown_stylesheet.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 
-class CommentWidget extends StatelessWidget {
+class CommentWidget extends StatefulWidget {
   final Comment comment;
+  final int level;
 
-  const CommentWidget({Key key, this.comment}) : super(key: key);
+  const CommentWidget({
+    Key key,
+    this.comment,
+    this.level,
+  }) : super(key: key);
+
+  @override
+  _CommentWidgetState createState() => _CommentWidgetState();
+}
+
+class _CommentWidgetState extends State<CommentWidget> {
+  int get _level => widget.level;
+  bool _collapseChildren = false;
+
+  final List<Color> commentBorderColor = [
+    Colors.grey,
+    Colors.blue,
+    Colors.red,
+    Colors.orange,
+    Colors.yellow,
+    Colors.green,
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.arrow_drop_down),
-                  Text(
-                    comment.author,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
+    return Column(
+      children: [
+        Card(
+          elevation: 0,
+          child: Container(
+            margin: EdgeInsets.only(
+              left: _level > 0 ? _level * 4.0 : 0.0,
+            ),
+            decoration: BoxDecoration(
+              border: Border(
+                left: BorderSide(
+                  width: 4.0,
+                  color: _level < commentBorderColor.length
+                      ? commentBorderColor[_level]
+                      : Colors.grey,
+                ),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.arrow_drop_down),
+                        Text(
+                          widget.comment.author,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(width: 6),
+                        Text(
+                          timeago.format(widget.comment.createdUtc,
+                              locale: 'en_short'),
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(width: 6),
-                  Text(
-                    timeago.format(comment.createdUtc, locale: 'en_short'),
-                    style: TextStyle(
+                    Icon(
+                      Icons.more_horiz,
                       color: Colors.grey,
-                      fontSize: 11,
                     ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: MarkdownBody(
+                    data: HtmlUnescape().convert(widget.comment.body),
+                    onTapLink: (text, link, _) => launch(link),
+                    styleSheet: customMarkdownStyleSheet,
                   ),
-                ],
-              ),
-              Icon(
-                Icons.more_horiz,
-                color: Colors.grey,
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: MarkdownBody(
-              data: HtmlUnescape().convert(comment.body),
-              onTapLink: (text, link, _) => launch(link),
-              styleSheet: customMarkdownStyleSheet,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(
+                      Icons.arrow_upward,
+                      color: Colors.grey,
+                      size: 18,
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      widget.comment.upvotes.toString(),
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_downward,
+                      color: Colors.grey,
+                      size: 18,
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+        if (widget.comment.replies != null && !_collapseChildren)
+          for (dynamic comment in widget.comment.replies.comments)
+            if (comment is Comment)
+              CommentWidget(
+                comment: comment,
+                level: _level + 1,
+              ),
+      ],
     );
   }
 }

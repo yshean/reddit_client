@@ -22,7 +22,7 @@ class CommentList extends StatelessWidget {
                 children: <Widget>[
                   for (dynamic topComment in snapshot.data.comments)
                     if (topComment is Comment)
-                      CommentWidget(comment: topComment)
+                      CommentWidget(comment: topComment, level: 0)
                 ],
               );
             } else {
@@ -55,7 +55,11 @@ class CommentList extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           for (dynamic topComment in post.getComments().comments)
-            if (topComment is Comment) CommentWidget(comment: topComment)
+            if (topComment is Comment)
+              CommentWidget(
+                comment: topComment,
+                level: 0,
+              ),
         ],
       );
     } else {
