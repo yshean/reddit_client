@@ -19,6 +19,7 @@ class Post extends Equatable {
   final String domain;
   final CommentForest Function() getComments;
   final Future<CommentForest> Function({CommentSortType sort}) refreshComments;
+  final Future<dynamic> Function() refreshPost;
 
   Post({
     this.title,
@@ -35,6 +36,7 @@ class Post extends Equatable {
     this.domain,
     this.getComments,
     this.refreshComments,
+    this.refreshPost,
   });
 
   factory Post.fromSubmission(Submission submission) => Post(
@@ -55,6 +57,7 @@ class Post extends Equatable {
         domain: submission.domain,
         getComments: () => submission.comments,
         refreshComments: submission.refreshComments,
+        refreshPost: submission.refresh,
       );
 
   Post copyWith({
