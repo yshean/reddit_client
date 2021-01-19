@@ -40,6 +40,7 @@ class _CommentWidgetState extends State<CommentWidget> {
         Card(
           elevation: 0,
           child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 4),
             margin: EdgeInsets.only(
               left: _level > 0 ? _level * 4.0 : 0.0,
             ),
@@ -60,66 +61,78 @@ class _CommentWidgetState extends State<CommentWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Icon(Icons.arrow_drop_down),
-                        Text(
-                          widget.comment.author,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _collapseChildren = !_collapseChildren;
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          _collapseChildren
+                              ? Icon(Icons.arrow_right)
+                              : Icon(Icons.arrow_drop_down),
+                          Text(
+                            widget.comment.author,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 6),
-                        Text(
-                          timeago.format(widget.comment.createdUtc,
-                              locale: 'en_short'),
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 11,
+                          SizedBox(width: 6),
+                          Text(
+                            timeago.format(widget.comment.createdUtc,
+                                locale: 'en_short'),
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 11,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Icon(
-                      Icons.more_horiz,
-                      color: Colors.grey,
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: MarkdownBody(
-                    data: HtmlUnescape().convert(widget.comment.body),
-                    onTapLink: (text, link, _) => launch(link),
-                    styleSheet: customMarkdownStyleSheet,
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Icon(
-                      Icons.arrow_upward,
-                      color: Colors.grey,
-                      size: 18,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      widget.comment.upvotes.toString(),
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
+                        ],
                       ),
                     ),
-                    SizedBox(width: 4),
-                    Icon(
-                      Icons.arrow_downward,
-                      color: Colors.grey,
-                      size: 18,
-                    ),
+                    if (!_collapseChildren)
+                      Icon(
+                        Icons.more_horiz,
+                        color: Colors.grey,
+                      ),
                   ],
                 ),
+                if (!_collapseChildren)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: MarkdownBody(
+                      data: HtmlUnescape().convert(widget.comment.body),
+                      onTapLink: (text, link, _) => launch(link),
+                      styleSheet: customMarkdownStyleSheet,
+                    ),
+                  ),
+                if (!_collapseChildren)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Icon(
+                        Icons.arrow_upward,
+                        color: Colors.grey,
+                        size: 18,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        widget.comment.upvotes.toString(),
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Icon(
+                        Icons.arrow_downward,
+                        color: Colors.grey,
+                        size: 18,
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),
