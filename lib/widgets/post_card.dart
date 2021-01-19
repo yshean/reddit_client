@@ -1,27 +1,18 @@
+import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class PostCard extends StatelessWidget {
-  final String title;
-  final String subreddit;
-  final String author;
-  final DateTime postedAt;
-  final int commentCount;
-  final int upvotes;
+  final Submission submission;
   final Widget Function(BuildContext) detailsBuilder;
-  final String thumbnailSrc;
 
-  const PostCard({
-    Key key,
-    @required this.title,
-    @required this.subreddit,
-    @required this.author,
-    @required this.postedAt,
-    @required this.commentCount,
-    @required this.upvotes,
-    @required this.detailsBuilder,
-    this.thumbnailSrc,
-  }) : super(key: key);
+  String get thumbnailSrc =>
+      submission.preview.isEmpty || submission.thumbnail.host == ''
+          ? null
+          : submission.thumbnail.toString();
+
+  const PostCard({Key key, this.submission, this.detailsBuilder})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +26,7 @@ class PostCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  author,
+                  submission.author,
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: 12,
@@ -43,7 +34,7 @@ class PostCard extends StatelessWidget {
                 ),
                 SizedBox(width: 8),
                 Text(
-                  timeago.format(postedAt),
+                  timeago.format(submission.createdUtc),
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: 12,
@@ -67,7 +58,7 @@ class PostCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          title,
+                          submission.title,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -76,7 +67,7 @@ class PostCard extends StatelessWidget {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          'r/$subreddit',
+                          'r/${submission.subreddit.displayName}',
                           style: TextStyle(
                             color: Colors.grey,
                             fontWeight: FontWeight.w600,
@@ -105,7 +96,7 @@ class PostCard extends StatelessWidget {
                     ),
                     SizedBox(width: 4),
                     Text(
-                      commentCount.toString(),
+                      submission.numComments.toString(),
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: 12,
@@ -122,7 +113,7 @@ class PostCard extends StatelessWidget {
                     ),
                     SizedBox(width: 4),
                     Text(
-                      upvotes.toString(),
+                      submission.upvotes.toString(),
                       style: TextStyle(
                         color: Colors.grey,
                         fontWeight: FontWeight.w600,

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
-import 'package:reddit_client/models/post.dart';
 import 'package:reddit_client/screens/post_details.dart';
 import 'package:reddit_client/widgets/feed_switcher.dart';
 import 'package:reddit_client/widgets/post_card.dart';
@@ -81,16 +80,11 @@ class _FeedScreenState extends State<FeedScreen> {
                           );
                         }
                         if (index < state.feeds.length) {
-                          final post = Post.fromSubmission(state.feeds[index]);
+                          final submission = state.feeds[index];
                           return PostCard(
-                            title: post.title,
-                            subreddit: post.subreddit,
-                            author: post.author,
-                            postedAt: post.postedAt,
-                            commentCount: post.commentCount,
-                            upvotes: post.upvotes,
-                            thumbnailSrc: post.thumbnailSrc,
-                            detailsBuilder: (context) => PostDetails(post),
+                            submission: submission,
+                            detailsBuilder: (context) =>
+                                PostDetails(submission),
                           );
                         }
                         return null;

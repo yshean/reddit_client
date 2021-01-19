@@ -1,16 +1,15 @@
 import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
-import 'package:reddit_client/models/post.dart';
 import 'package:reddit_client/widgets/comment/comment_widget.dart';
 
 class CommentList extends StatelessWidget {
-  final Post post;
+  final Submission post;
 
   const CommentList({Key key, this.post}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (post.getComments() == null) {
+    if (post.comments == null) {
       return FutureBuilder(
         future: post.refreshComments(),
         builder: (context, snapshot) {
@@ -51,12 +50,12 @@ class CommentList extends StatelessWidget {
           }
         },
       );
-    } else if (post.getComments().comments.isNotEmpty) {
+    } else if (post.comments.comments.isNotEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          for (dynamic topComment in post.getComments().comments)
+          for (dynamic topComment in post.comments.comments)
             if (topComment is Comment)
               CommentWidget(
                 comment: topComment,

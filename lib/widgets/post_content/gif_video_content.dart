@@ -1,11 +1,11 @@
 import 'package:chewie/chewie.dart';
+import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
-import 'package:reddit_client/models/post.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_provider/video_provider.dart';
 
 class GifVideoContent extends StatefulWidget {
-  final Post post;
+  final Submission post;
 
   const GifVideoContent({Key key, this.post}) : super(key: key);
 
@@ -14,7 +14,7 @@ class GifVideoContent extends StatefulWidget {
 }
 
 class _GifVideoContentState extends State<GifVideoContent> {
-  Post get _post => widget.post;
+  Submission get _post => widget.post;
 
   VideoPlayerController _playerController;
   ChewieController _chewieController;

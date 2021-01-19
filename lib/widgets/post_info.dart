@@ -1,9 +1,9 @@
+import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
-import 'package:reddit_client/models/post.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class PostInfo extends StatelessWidget {
-  final Post post;
+  final Submission post;
 
   const PostInfo(this.post);
 
@@ -38,7 +38,7 @@ class PostInfo extends StatelessWidget {
               ),
             ),
             Text(
-              timeago.format(post.postedAt, locale: 'en_short'),
+              timeago.format(post.createdUtc, locale: 'en_short'),
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 12,

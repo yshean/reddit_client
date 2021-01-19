@@ -1,9 +1,9 @@
+import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_link_preview/flutter_link_preview.dart';
-import 'package:reddit_client/models/post.dart';
 
 class LinkContent extends StatefulWidget {
-  final Post post;
+  final Submission post;
 
   const LinkContent({Key key, this.post}) : super(key: key);
 
@@ -12,7 +12,7 @@ class LinkContent extends StatefulWidget {
 }
 
 class _LinkContentState extends State<LinkContent> {
-  Post get _post => widget.post;
+  Submission get _post => widget.post;
 
   @override
   Widget build(BuildContext context) {

@@ -1,12 +1,11 @@
 import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
-import 'package:reddit_client/models/post.dart';
 import 'package:reddit_client/widgets/comment/comment_list.dart';
 import 'package:reddit_client/widgets/post_content/post_content.dart';
 import 'package:reddit_client/widgets/post_info.dart';
 
 class PostDetails extends StatefulWidget {
-  final Post post;
+  final Submission post;
 
   const PostDetails(this.post);
 
@@ -15,7 +14,7 @@ class PostDetails extends StatefulWidget {
 }
 
 class _PostDetailsState extends State<PostDetails> {
-  Post _post;
+  Submission _post;
 
   @override
   void initState() {
@@ -29,10 +28,10 @@ class _PostDetailsState extends State<PostDetails> {
       appBar: AppBar(),
       body: RefreshIndicator(
         onRefresh: () {
-          return widget.post.refreshPost().then((post) {
+          return widget.post.refresh().then((post) {
             (post.first as Submission).refreshComments();
             setState(() {
-              _post = Post.fromSubmission(post.first);
+              _post = post.first;
             });
           });
         },
