@@ -30,6 +30,7 @@ class _LinkContentState extends State<LinkContent> {
           return SizedBox(
             height: 350,
             child: Card(
+              margin: const EdgeInsets.all(0),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0)),
               clipBehavior: Clip.antiAlias,
@@ -38,11 +39,28 @@ class _LinkContentState extends State<LinkContent> {
                 children: [
                   if (info.image != null)
                     Expanded(
-                        child: Image.network(
-                      info.image,
-                      width: double.maxFinite,
-                      fit: BoxFit.cover,
-                    )),
+                      child: Stack(
+                        alignment: Alignment.bottomLeft,
+                        children: [
+                          Image.network(
+                            info.image,
+                            width: double.maxFinite,
+                            fit: BoxFit.cover,
+                          ),
+                          Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  color: Colors.black.withAlpha(80)),
+                              child: Text(
+                                _post.domain,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              )),
+                        ],
+                      ),
+                    ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
                     child: Text(
