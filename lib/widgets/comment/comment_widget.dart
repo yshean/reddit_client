@@ -31,6 +31,11 @@ class _CommentWidgetState extends State<CommentWidget> {
     Colors.orange,
     Colors.yellow,
     Colors.green,
+    Colors.purple,
+    Colors.teal,
+    Colors.blueGrey,
+    Colors.pink,
+    Colors.brown,
   ];
 
   @override
@@ -50,7 +55,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                   width: 4.0,
                   color: _level < commentBorderColor.length
                       ? commentBorderColor[_level]
-                      : Colors.grey,
+                      : Colors.cyan,
                 ),
               ),
             ),
@@ -88,6 +93,15 @@ class _CommentWidgetState extends State<CommentWidget> {
                               fontSize: 11,
                             ),
                           ),
+                          SizedBox(width: 6),
+                          if (_collapseChildren &&
+                              widget.comment.replies != null)
+                            Text(
+                              '(${widget.comment.replies.length} ${widget.comment.replies.length == 1 ? 'reply' : 'replies'})',
+                              style: TextStyle(
+                                fontSize: 12,
+                              ),
+                            ),
                         ],
                       ),
                     ),
