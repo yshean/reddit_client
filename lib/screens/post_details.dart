@@ -14,27 +14,45 @@ class PostDetails extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                post.title,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    post.title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  PostContent(post),
+                  SizedBox(height: 8.0),
+                  PostInfo(post),
+                  SizedBox(height: 4.0),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                'COMMENTS',
                 style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
                   fontWeight: FontWeight.w600,
-                  fontSize: 16.0,
                 ),
               ),
-              SizedBox(height: 8.0),
-              PostContent(post),
-              SizedBox(height: 8.0),
-              PostInfo(post),
-              SizedBox(height: 4.0),
-              Divider(),
-              CommentList(post: post),
-            ],
-          ),
+            ),
+            CommentList(post: post),
+          ],
         ),
       ),
     );

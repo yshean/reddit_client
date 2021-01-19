@@ -18,6 +18,7 @@ class CommentList extends StatelessWidget {
             if (snapshot.hasData) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   for (dynamic topComment in snapshot.data.comments)
                     if (topComment is Comment)
@@ -51,6 +52,7 @@ class CommentList extends StatelessWidget {
     } else if (post.getComments().comments.isNotEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           for (dynamic topComment in post.getComments().comments)
             if (topComment is Comment) CommentWidget(comment: topComment)
