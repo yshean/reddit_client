@@ -51,7 +51,7 @@ class _LinkContentState extends State<LinkContent> {
                               width: double.infinity,
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                  color: Colors.black.withAlpha(80)),
+                                  color: Colors.black.withAlpha(200)),
                               child: Text(
                                 _post.domain,
                                 style: TextStyle(
