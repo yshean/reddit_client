@@ -29,9 +29,11 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   ) async* {
     if (event is SearchRequested) {
       yield SearchSubredditInProgress();
-      _searchRepository
-          .searchSubreddit(event.query)
-          .then((result) => add(SearchLoaded(DateTime.now(), result)));
+      final List<SubredditRef> refs =
+          await _searchRepository.searchSubreddit(event.query);
+      final List<Subreddit> populated =
+          await Future.wait(refs.map((ref) => ref.populate()));
+      add(SearchLoaded(DateTime.now(), populated));
     } else if (event is SearchLoaded) {
       yield SearchSubredditSuccess(event.updatedAt, event.result);
     } else if (event is SearchCleared) {

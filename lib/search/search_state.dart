@@ -13,7 +13,7 @@ class SearchSubredditInProgress extends SearchState {}
 
 class SearchSubredditSuccess extends SearchState {
   final DateTime updatedAt;
-  final List<SubredditRef> result;
+  final List<Subreddit> result;
 
   SearchSubredditSuccess(this.updatedAt, this.result);
 

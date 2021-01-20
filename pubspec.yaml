@@ -21,6 +21,7 @@ dependencies:
   flutter_markdown: ^0.5.2
   html_unescape: ^1.0.2
   http: null
+  intl: ^0.16.1
   metadata_fetch: ^0.3.4
   rxdart: ^0.25.0
   timeago: ^2.0.29

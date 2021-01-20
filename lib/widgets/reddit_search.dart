@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/search/search_bloc.dart';
+import 'package:reddit_client/widgets/subreddit_tile.dart';
 
 class RedditSearch extends SearchDelegate<String> {
   @override
@@ -47,16 +48,13 @@ class RedditSearch extends SearchDelegate<String> {
           }
           if (state is SearchSubredditSuccess) {
             if (state.result.isEmpty) {
-              return Text('No result');
+              return Center(child: Text('No result found'));
             }
             return ListView.builder(
-              itemBuilder: (context, index) => ListTile(
-                title: Text(state.result[index].displayName),
-                onTap: () {
-                  close(context, state.result[index].displayName);
-                },
-              ),
               itemCount: state.result.length,
+              itemBuilder: (context, index) => SubredditTile(
+                subreddit: state.result[index],
+              ),
             );
           }
           return Container();
