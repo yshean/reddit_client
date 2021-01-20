@@ -1,9 +1,10 @@
 import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reddit_client/app_router.dart';
+import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
 import 'package:reddit_client/repositories/index.dart';
-import 'package:reddit_client/screens/feed_screen.dart';
 import 'package:reddit_client/secrets.dart';
 import 'package:reddit_client/simple_bloc_observer.dart';
 import 'package:uuid/uuid.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   FeedRepository feedRepository;
+  final AppRouter _appRouter = AppRouter();
 
   @override
   void initState() {
@@ -37,17 +39,20 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Reddit Client',
-      home: feedRepository == null
-          ? Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            )
-          : BlocProvider(
-              create: (context) =>
-                  FeedBloc(feedRepository)..add(FeedRequested()),
-              child: FeedScreen(),
-            ),
+    if (feedRepository == null) {
+      return MaterialApp(
+        title: 'Reddit Client',
+        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      );
+    }
+
+    return BlocProvider(
+      create: (context) => FeedBloc(feedRepository)
+        ..add(FeedRequested(filter: DEFAULT_FRONT_FILTER)),
+      child: MaterialApp(
+        title: 'Reddit Client',
+        onGenerateRoute: _appRouter.onGenerateRoute,
+      ),
     );
   }
 }

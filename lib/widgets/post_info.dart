@@ -21,12 +21,20 @@ class PostInfo extends StatelessWidget {
                 fontSize: 12,
               ),
             ),
-            Text(
-              'r/${post.subreddit.displayName}',
-              style: TextStyle(
-                color: Colors.grey,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  '/subreddit',
+                  arguments: post.subreddit,
+                );
+              },
+              child: Text(
+                'r/${post.subreddit.displayName}',
+                style: TextStyle(
+                  color: Colors.blueGrey,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                ),
               ),
             ),
             Text(

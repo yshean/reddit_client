@@ -1,36 +1,46 @@
 import 'dart:async';
 
+import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
-import 'package:reddit_client/widgets/feed_switcher.dart';
 import 'package:reddit_client/widgets/post_card.dart';
+import 'package:reddit_client/widgets/subreddit_feed_switcher.dart';
 
-class FeedScreen extends StatefulWidget {
+class SubredditScreen extends StatefulWidget {
+  final SubredditRef subredditRef;
+
+  const SubredditScreen({Key key, this.subredditRef}) : super(key: key);
+
   @override
-  _FeedScreenState createState() => _FeedScreenState();
+  _SubredditScreenState createState() => _SubredditScreenState();
 }
 
-class _FeedScreenState extends State<FeedScreen> {
-  FeedFilter _selectedFilter = DEFAULT_FRONT_FILTER;
+class _SubredditScreenState extends State<SubredditScreen> {
+  FeedFilter _selectedFilter = DEFAULT_SUBREDDIT_FILTER;
   Completer<void> _refreshCompleter;
 
   @override
   void initState() {
     super.initState();
     _refreshCompleter = Completer<void>();
+    context.read<FeedBloc>().add(FeedRequested(
+          subreddit: widget.subredditRef.displayName,
+          filter: DEFAULT_SUBREDDIT_FILTER,
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reddit'),
+        title: Text(widget.subredditRef.displayName),
       ),
       body: Column(
         children: [
-          FeedSwitcher(
+          SubredditFeedSwitcher(
+            subredditName: widget.subredditRef.displayName,
             selectedFilter: _selectedFilter,
             setSelectedFilter: (filter) {
               setState(() {
@@ -56,9 +66,10 @@ class _FeedScreenState extends State<FeedScreen> {
                 return Expanded(
                   child: RefreshIndicator(
                     onRefresh: () {
-                      context
-                          .read<FeedBloc>()
-                          .add(FeedRefreshRequested(filter: _selectedFilter));
+                      context.read<FeedBloc>().add(FeedRefreshRequested(
+                            subreddit: widget.subredditRef.displayName,
+                            filter: _selectedFilter,
+                          ));
                       return _refreshCompleter.future;
                     },
                     child: ListView.builder(
@@ -66,6 +77,7 @@ class _FeedScreenState extends State<FeedScreen> {
                       itemBuilder: (context, index) {
                         if (index == state.feeds.length - NEXT_PAGE_THRESHOLD) {
                           context.read<FeedBloc>().add(FeedRequested(
+                                subreddit: widget.subredditRef.displayName,
                                 loadMore: true,
                                 filter: _selectedFilter,
                               ));

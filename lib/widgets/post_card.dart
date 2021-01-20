@@ -61,9 +61,10 @@ class _PostCardState extends State<PostCard> {
                     await Navigator.of(context).push(MaterialPageRoute(
                   builder: (_) => PostDetails(_submission),
                 ));
-                setState(() {
-                  _submission = updatedSubmission;
-                });
+                if (mounted)
+                  setState(() {
+                    _submission = updatedSubmission;
+                  });
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,

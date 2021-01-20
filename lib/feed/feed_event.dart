@@ -18,9 +18,9 @@ class FeedRequested extends FeedEvent {
   FeedRequested({
     this.subreddit,
     this.limit = 20,
-    this.filter = DEFAULT_FILTER,
     this.loadMore = false,
-  });
+    this.filter,
+  }) : assert(filter != null);
 
   @override
   List<Object> get props => [
@@ -49,8 +49,8 @@ class FeedRefreshRequested extends FeedEvent {
   FeedRefreshRequested({
     this.subreddit,
     this.limit = 20,
-    this.filter = DEFAULT_FILTER,
-  });
+    this.filter,
+  }) : assert(filter != null);
 
   @override
   List<Object> get props => [

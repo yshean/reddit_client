@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:draw/draw.dart';
 import 'package:equatable/equatable.dart';
-import 'package:reddit_client/constants.dart';
 
 import '../repositories/index.dart';
 
@@ -36,20 +35,38 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       _contents.clear();
       yield FeedLoadInProgress();
     }
-    _feedSubscription = _feedRepository
-        .getFeed(
-      filter: event.filter,
-      limit: event.limit,
-      after: event.loadMore ? _contents.last.fullname : null,
-    )
-        .listen(
-      (content) {
-        _contents.add(content);
-      },
-      onDone: () {
-        add(FeedLoaded(DateTime.now(), _contents));
-      },
-    );
+    if (event.subreddit == null) {
+      _feedSubscription = _feedRepository
+          .getFeed(
+        filter: event.filter,
+        limit: event.limit,
+        after: event.loadMore ? _contents.last.fullname : null,
+      )
+          .listen(
+        (content) {
+          _contents.add(content);
+        },
+        onDone: () {
+          add(FeedLoaded(DateTime.now(), _contents));
+        },
+      );
+    } else {
+      _feedSubscription = _feedRepository
+          .getSubredditFeed(
+        subredditName: event.subreddit,
+        filter: event.filter,
+        limit: event.limit,
+        after: event.loadMore ? _contents.last.fullname : null,
+      )
+          .listen(
+        (content) {
+          _contents.add(content);
+        },
+        onDone: () {
+          add(FeedLoaded(DateTime.now(), _contents));
+        },
+      );
+    }
   }
 
   Stream<FeedState> _mapFeedRefreshRequestedToState(
@@ -57,19 +74,37 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     _feedSubscription?.cancel();
     _contents.clear();
     yield FeedRefreshInProgress();
-    _feedSubscription = _feedRepository
-        .getFeed(
-      filter: event.filter,
-      limit: event.limit,
-    )
-        .listen(
-      (content) {
-        _contents.add(content);
-      },
-      onDone: () {
-        add(FeedLoaded(DateTime.now(), _contents));
-      },
-    );
+
+    if (event.subreddit == null) {
+      _feedSubscription = _feedRepository
+          .getFeed(
+        filter: event.filter,
+        limit: event.limit,
+      )
+          .listen(
+        (content) {
+          _contents.add(content);
+        },
+        onDone: () {
+          add(FeedLoaded(DateTime.now(), _contents));
+        },
+      );
+    } else {
+      _feedSubscription = _feedRepository
+          .getSubredditFeed(
+        subredditName: event.subreddit,
+        filter: event.filter,
+        limit: event.limit,
+      )
+          .listen(
+        (content) {
+          _contents.add(content);
+        },
+        onDone: () {
+          add(FeedLoaded(DateTime.now(), _contents));
+        },
+      );
+    }
   }
 
   @override
