@@ -6,6 +6,7 @@ import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
 import 'package:reddit_client/widgets/feed_switcher.dart';
 import 'package:reddit_client/widgets/post_card.dart';
+import 'package:reddit_client/widgets/reddit_search.dart';
 
 class FeedScreen extends StatefulWidget {
   @override
@@ -15,6 +16,7 @@ class FeedScreen extends StatefulWidget {
 class _FeedScreenState extends State<FeedScreen> {
   FeedFilter _selectedFilter = DEFAULT_FRONT_FILTER;
   Completer<void> _refreshCompleter;
+  // final _controller = TextEditingController();
 
   @override
   void initState() {
@@ -22,14 +24,50 @@ class _FeedScreenState extends State<FeedScreen> {
     _refreshCompleter = Completer<void>();
   }
 
+  // @override
+  // void dispose() {
+  //   _controller.dispose();
+  //   super.dispose();
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Reddit'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: RedditSearch(),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
+          // TextField(
+          //   controller: _controller,
+          //   onTap: () async {
+          //     // placeholder for our places search later
+          //   },
+          //   decoration: InputDecoration(
+          //     contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          //     prefixIcon: Icon(Icons.search),
+          //     hintText: "Search...",
+          //     enabledBorder: OutlineInputBorder(
+          //       borderSide: BorderSide(color: Colors.white, width: 32.0),
+          //       borderRadius: BorderRadius.circular(25.0),
+          //     ),
+          //     focusedBorder: OutlineInputBorder(
+          //       borderSide: BorderSide(color: Colors.white, width: 32.0),
+          //       borderRadius: BorderRadius.circular(25.0),
+          //     ),
+          //   ),
+          // ),
           FeedSwitcher(
             selectedFilter: _selectedFilter,
             setSelectedFilter: (filter) {

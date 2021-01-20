@@ -51,4 +51,7 @@ class FeedRepository {
 
     return null;
   }
+
+  // Future<List<SubredditRef>> searchSubreddit(String query) =>
+  //     redditClient.subreddits.searchByName(query);
 }
