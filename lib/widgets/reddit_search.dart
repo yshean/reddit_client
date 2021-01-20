@@ -36,28 +36,33 @@ class RedditSearch extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    if (query.isNotEmpty)
+    if (query.isNotEmpty) {
       BlocProvider.of<SearchBloc>(context).add(SearchRequested(query));
-    return BlocBuilder<SearchBloc, SearchState>(
-      builder: (context, state) {
-        if (state is SearchSubredditInProgress) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        if (state is SearchSubredditSuccess) {
-          return ListView.builder(
-            itemBuilder: (context, index) => ListTile(
-              title: Text(state.result[index].displayName),
-              onTap: () {
-                close(context, state.result[index].displayName);
-              },
-            ),
-            itemCount: state.result.length,
-          );
-        }
-        return Container();
-      },
-    );
+      return BlocBuilder<SearchBloc, SearchState>(
+        builder: (context, state) {
+          if (state is SearchSubredditInProgress) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (state is SearchSubredditSuccess) {
+            if (state.result.isEmpty) {
+              return Text('No result');
+            }
+            return ListView.builder(
+              itemBuilder: (context, index) => ListTile(
+                title: Text(state.result[index].displayName),
+                onTap: () {
+                  close(context, state.result[index].displayName);
+                },
+              ),
+              itemCount: state.result.length,
+            );
+          }
+          return Container();
+        },
+      );
+    }
+    return Container();
   }
 }
