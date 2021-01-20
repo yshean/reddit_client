@@ -22,29 +22,43 @@ class FeedSwitcher extends StatelessWidget {
           builder: (context, constraints) => ToggleButtons(
             borderRadius: BorderRadius.circular(5),
             constraints: BoxConstraints.expand(
-              width: (constraints.maxWidth - 16) / 3,
+              width: (constraints.maxWidth - 16) / 5,
               height: 26,
             ),
             children: [
+              Text('Best'),
               Text('Hot'),
               Text('New'),
+              Text('Top'),
               Text('Rising'),
             ],
             onPressed: (index) {
               switch (index) {
                 case 0:
+                  setSelectedFilter(FeedFilter.BEST);
+                  context
+                      .read<FeedBloc>()
+                      .add(FeedRequested(filter: FeedFilter.BEST));
+                  break;
+                case 1:
                   setSelectedFilter(FeedFilter.HOT);
                   context
                       .read<FeedBloc>()
                       .add(FeedRequested(filter: FeedFilter.HOT));
                   break;
-                case 1:
+                case 2:
                   setSelectedFilter(FeedFilter.NEW);
                   context
                       .read<FeedBloc>()
                       .add(FeedRequested(filter: FeedFilter.NEW));
                   break;
-                case 2:
+                case 3:
+                  setSelectedFilter(FeedFilter.TOP);
+                  context
+                      .read<FeedBloc>()
+                      .add(FeedRequested(filter: FeedFilter.TOP));
+                  break;
+                case 4:
                   setSelectedFilter(FeedFilter.RISING);
                   context
                       .read<FeedBloc>()
@@ -55,8 +69,10 @@ class FeedSwitcher extends StatelessWidget {
               }
             },
             isSelected: [
+              selectedFilter == FeedFilter.BEST,
               selectedFilter == FeedFilter.HOT,
               selectedFilter == FeedFilter.NEW,
+              selectedFilter == FeedFilter.TOP,
               selectedFilter == FeedFilter.RISING,
             ],
           ),
