@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:reddit_client/widgets/comment/comment_list.dart';
@@ -37,7 +39,7 @@ class _PostDetailsState extends State<PostDetails> {
     return Scaffold(
       appBar: AppBar(
         leading: InkResponse(
-          child: Icon(Icons.arrow_back),
+          child: Icon(Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
           onTap: () => Navigator.of(context).pop(_post),
         ),
       ),
