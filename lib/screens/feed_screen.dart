@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
+import 'package:reddit_client/search/search_bloc.dart';
 import 'package:reddit_client/widgets/feed_switcher.dart';
 import 'package:reddit_client/widgets/post_card.dart';
 import 'package:reddit_client/widgets/reddit_search.dart';
@@ -39,6 +40,7 @@ class _FeedScreenState extends State<FeedScreen> {
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
+              context.read<SearchBloc>().add(SearchCleared());
               showSearch(
                 context: context,
                 delegate: RedditSearch(),

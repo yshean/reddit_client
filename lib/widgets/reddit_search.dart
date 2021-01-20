@@ -1,13 +1,10 @@
 import 'dart:io';
 
-import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reddit_client/search/search_bloc.dart';
 
 class RedditSearch extends SearchDelegate<String> {
-  final Reddit reddit;
-
-  RedditSearch(this.reddit);
-
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -39,25 +36,28 @@ class RedditSearch extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return FutureBuilder(
-      future: query == "" ? null : reddit.subreddits.searchByName(query),
-      builder: (context, snapshot) => query == ''
-          ? Container(
-              padding: EdgeInsets.all(16.0),
-              child: Text('Show suggestions / trending subreddits'),
-            )
-          : snapshot.hasData
-              ? ListView.builder(
-                  itemBuilder: (context, index) => ListTile(
-                    // we will display the data returned from our future here
-                    title: Text(snapshot.data[index]),
-                    onTap: () {
-                      close(context, snapshot.data[index]);
-                    },
-                  ),
-                  itemCount: snapshot.data.length,
-                )
-              : Container(child: Text('Loading...')),
+    if (query.isNotEmpty)
+      BlocProvider.of<SearchBloc>(context).add(SearchRequested(query));
+    return BlocBuilder<SearchBloc, SearchState>(
+      builder: (context, state) {
+        if (state is SearchSubredditInProgress) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (state is SearchSubredditSuccess) {
+          return ListView.builder(
+            itemBuilder: (context, index) => ListTile(
+              title: Text(state.result[index].displayName),
+              onTap: () {
+                close(context, state.result[index].displayName);
+              },
+            ),
+            itemCount: state.result.length,
+          );
+        }
+        return Container();
+      },
     );
   }
 }

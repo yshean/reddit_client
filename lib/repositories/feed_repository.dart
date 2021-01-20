@@ -2,8 +2,6 @@ import 'package:draw/draw.dart';
 import 'package:meta/meta.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
 
-class NotImplemented implements Exception {}
-
 class FeedRepository {
   final Reddit redditClient;
 
@@ -51,7 +49,4 @@ class FeedRepository {
 
     return null;
   }
-
-  // Future<List<SubredditRef>> searchSubreddit(String query) =>
-  //     redditClient.subreddits.searchByName(query);
 }

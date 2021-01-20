@@ -5,6 +5,8 @@ import 'package:reddit_client/app_router.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
 import 'package:reddit_client/repositories/index.dart';
+import 'package:reddit_client/repositories/search_repository.dart';
+import 'package:reddit_client/search/search_bloc.dart';
 import 'package:reddit_client/secrets.dart';
 import 'package:reddit_client/simple_bloc_observer.dart';
 import 'package:uuid/uuid.dart';
@@ -21,6 +23,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   FeedRepository feedRepository;
+  SearchRepository searchRepository;
   final AppRouter _appRouter = AppRouter();
 
   @override
@@ -32,6 +35,7 @@ class _MyAppState extends State<MyApp> {
     ).then((redditClient) {
       setState(() {
         feedRepository = FeedRepository(redditClient);
+        searchRepository = SearchRepository(redditClient);
       });
     });
     super.initState();
@@ -46,9 +50,16 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    return BlocProvider(
-      create: (context) => FeedBloc(feedRepository)
-        ..add(FeedRequested(filter: DEFAULT_FRONT_FILTER)),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => FeedBloc(feedRepository)
+            ..add(FeedRequested(filter: DEFAULT_FRONT_FILTER)),
+        ),
+        BlocProvider(
+          create: (context) => SearchBloc(searchRepository),
+        ),
+      ],
       child: MaterialApp(
         title: 'Reddit Client',
         onGenerateRoute: _appRouter.onGenerateRoute,
