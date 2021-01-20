@@ -32,7 +32,7 @@ class RedditSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    return null;
+    return buildSuggestions(context);
   }
 
   @override
