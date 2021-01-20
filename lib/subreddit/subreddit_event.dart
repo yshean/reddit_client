@@ -1,54 +1,58 @@
-part of 'feed_bloc.dart';
+part of 'subreddit_bloc.dart';
 
-enum FeedFilter { BEST, HOT, NEW, TOP, RISING }
-
-abstract class FeedEvent extends Equatable {
-  const FeedEvent();
+abstract class SubredditEvent extends Equatable {
+  const SubredditEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class FeedRequested extends FeedEvent {
+class SubredditFeedRequested extends SubredditEvent {
+  final String subreddit;
   final int limit;
   final FeedFilter filter;
   final bool loadMore;
 
-  FeedRequested({
+  SubredditFeedRequested({
+    this.subreddit,
     this.limit = 20,
     this.loadMore = false,
     this.filter,
-  }) : assert(filter != null);
+  }) : assert(subreddit != null && filter != null);
 
   @override
   List<Object> get props => [
+        subreddit,
         limit,
         filter,
         loadMore,
       ];
 }
 
-class FeedLoaded extends FeedEvent {
+class SubredditFeedLoaded extends SubredditEvent {
   final DateTime updatedAt;
   final List<Submission> content;
 
-  FeedLoaded(this.updatedAt, this.content);
+  SubredditFeedLoaded(this.updatedAt, this.content);
 
   @override
   List<Object> get props => [updatedAt, content];
 }
 
-class FeedRefreshRequested extends FeedEvent {
+class SubredditFeedRefreshRequested extends SubredditEvent {
+  final String subreddit;
   final int limit;
   final FeedFilter filter;
 
-  FeedRefreshRequested({
+  SubredditFeedRefreshRequested({
+    this.subreddit,
     this.limit = 20,
     this.filter,
   }) : assert(filter != null);
 
   @override
   List<Object> get props => [
+        subreddit,
         limit,
         filter,
       ];

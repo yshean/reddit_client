@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
+import 'package:reddit_client/subreddit/subreddit_bloc.dart';
 
 class SubredditFeedSwitcher extends StatelessWidget {
   const SubredditFeedSwitcher({
@@ -37,28 +38,28 @@ class SubredditFeedSwitcher extends StatelessWidget {
               switch (index) {
                 case 0:
                   setSelectedFilter(FeedFilter.HOT);
-                  context.read<FeedBloc>().add(FeedRequested(
+                  context.read<SubredditBloc>().add(SubredditFeedRequested(
                         subreddit: subredditName,
                         filter: FeedFilter.HOT,
                       ));
                   break;
                 case 1:
                   setSelectedFilter(FeedFilter.NEW);
-                  context.read<FeedBloc>().add(FeedRequested(
+                  context.read<SubredditBloc>().add(SubredditFeedRequested(
                         subreddit: subredditName,
                         filter: FeedFilter.NEW,
                       ));
                   break;
                 case 2:
                   setSelectedFilter(FeedFilter.TOP);
-                  context.read<FeedBloc>().add(FeedRequested(
+                  context.read<SubredditBloc>().add(SubredditFeedRequested(
                         subreddit: subredditName,
                         filter: FeedFilter.TOP,
                       ));
                   break;
                 case 3:
                   setSelectedFilter(FeedFilter.RISING);
-                  context.read<FeedBloc>().add(FeedRequested(
+                  context.read<SubredditBloc>().add(SubredditFeedRequested(
                         subreddit: subredditName,
                         filter: FeedFilter.RISING,
                       ));

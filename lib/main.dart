@@ -9,6 +9,7 @@ import 'package:reddit_client/repositories/search_repository.dart';
 import 'package:reddit_client/search/search_bloc.dart';
 import 'package:reddit_client/secrets.dart';
 import 'package:reddit_client/simple_bloc_observer.dart';
+import 'package:reddit_client/subreddit/subreddit_bloc.dart';
 import 'package:uuid/uuid.dart';
 
 void main() {
@@ -55,6 +56,9 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(
           create: (context) => FeedBloc(feedRepository)
             ..add(FeedRequested(filter: DEFAULT_FRONT_FILTER)),
+        ),
+        BlocProvider(
+          create: (context) => SubredditBloc(feedRepository),
         ),
         BlocProvider(
           create: (context) => SearchBloc(searchRepository),
