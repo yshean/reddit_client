@@ -40,6 +40,131 @@ class _CommentWidgetState extends State<CommentWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (_collapseChildren)
+      return CollapsedComment(
+        level: _level,
+        commentBorderColor: commentBorderColor,
+        comment: widget.comment,
+        expandComment: () {
+          setState(() {
+            _collapseChildren = false;
+          });
+        },
+      );
+    return ExpandedComment(
+      level: _level,
+      commentBorderColor: commentBorderColor,
+      comment: widget.comment,
+      collapseComment: () {
+        setState(() {
+          _collapseChildren = true;
+        });
+      },
+    );
+  }
+}
+
+class CollapsedComment extends StatelessWidget {
+  final int level;
+  final List<Color> commentBorderColor;
+  final Comment comment;
+  final void Function() expandComment;
+
+  const CollapsedComment({
+    Key key,
+    this.level,
+    this.commentBorderColor,
+    this.comment,
+    this.expandComment,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: expandComment,
+      child: Column(
+        children: [
+          Card(
+            elevation: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              margin: EdgeInsets.only(
+                left: level > 0 ? level * 4.0 : 0.0,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  left: BorderSide(
+                    width: 4.0,
+                    color: level < commentBorderColor.length
+                        ? commentBorderColor[level]
+                        : Colors.cyan,
+                  ),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.arrow_right),
+                          Text(
+                            comment.author,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(width: 6),
+                          Text(
+                            timeago.format(comment.createdUtc,
+                                locale: 'en_short'),
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 11,
+                            ),
+                          ),
+                          SizedBox(width: 6),
+                          if (comment.replies != null)
+                            Text(
+                              '(${comment.replies.length} ${comment.replies.length == 1 ? 'reply' : 'replies'})',
+                              style: TextStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ExpandedComment extends StatelessWidget {
+  final int level;
+  final List<Color> commentBorderColor;
+  final Comment comment;
+  final void Function() collapseComment;
+
+  const ExpandedComment({
+    Key key,
+    this.level,
+    this.commentBorderColor,
+    this.comment,
+    this.collapseComment,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Card(
@@ -47,14 +172,14 @@ class _CommentWidgetState extends State<CommentWidget> {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 4),
             margin: EdgeInsets.only(
-              left: _level > 0 ? _level * 4.0 : 0.0,
+              left: level > 0 ? level * 4.0 : 0.0,
             ),
             decoration: BoxDecoration(
               border: Border(
                 left: BorderSide(
                   width: 4.0,
-                  color: _level < commentBorderColor.length
-                      ? commentBorderColor[_level]
+                  color: level < commentBorderColor.length
+                      ? commentBorderColor[level]
                       : Colors.cyan,
                 ),
               ),
@@ -67,18 +192,12 @@ class _CommentWidgetState extends State<CommentWidget> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _collapseChildren = !_collapseChildren;
-                        });
-                      },
+                      onTap: collapseComment,
                       child: Row(
                         children: [
-                          _collapseChildren
-                              ? Icon(Icons.arrow_right)
-                              : Icon(Icons.arrow_drop_down),
+                          Icon(Icons.arrow_drop_down),
                           Text(
-                            widget.comment.author,
+                            comment.author,
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -86,7 +205,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                           ),
                           SizedBox(width: 6),
                           Text(
-                            timeago.format(widget.comment.createdUtc,
+                            timeago.format(comment.createdUtc,
                                 locale: 'en_short'),
                             style: TextStyle(
                               color: Colors.grey,
@@ -94,71 +213,179 @@ class _CommentWidgetState extends State<CommentWidget> {
                             ),
                           ),
                           SizedBox(width: 6),
-                          if (_collapseChildren &&
-                              widget.comment.replies != null)
-                            Text(
-                              '(${widget.comment.replies.length} ${widget.comment.replies.length == 1 ? 'reply' : 'replies'})',
-                              style: TextStyle(
-                                fontSize: 12,
-                              ),
-                            ),
                         ],
                       ),
                     ),
-                    if (!_collapseChildren)
-                      Icon(
-                        Icons.more_horiz,
-                        color: Colors.grey,
-                      ),
+                    Icon(
+                      Icons.more_horiz,
+                      color: Colors.grey,
+                    ),
                   ],
                 ),
-                if (!_collapseChildren)
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: MarkdownBody(
-                      data: HtmlUnescape().convert(widget.comment.body),
-                      onTapLink: (text, link, _) => launch(link),
-                      styleSheet: customMarkdownStyleSheet,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: MarkdownBody(
+                    data: HtmlUnescape().convert(comment.body),
+                    onTapLink: (text, link, _) => launch(link),
+                    styleSheet: customMarkdownStyleSheet,
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(
+                      Icons.arrow_upward,
+                      color: Colors.grey,
+                      size: 18,
                     ),
-                  ),
-                if (!_collapseChildren)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Icon(
-                        Icons.arrow_upward,
+                    SizedBox(width: 4),
+                    Text(
+                      comment.upvotes.toString(),
+                      style: TextStyle(
                         color: Colors.grey,
-                        size: 18,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
                       ),
-                      SizedBox(width: 4),
-                      Text(
-                        widget.comment.upvotes.toString(),
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                        ),
-                      ),
-                      SizedBox(width: 4),
-                      Icon(
-                        Icons.arrow_downward,
-                        color: Colors.grey,
-                        size: 18,
-                      ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_downward,
+                      color: Colors.grey,
+                      size: 18,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
         ),
-        if (widget.comment.replies != null && !_collapseChildren)
-          for (dynamic comment in widget.comment.replies.comments)
+        if (comment.replies != null)
+          for (dynamic comment in comment.replies.comments)
             if (comment is Comment)
               CommentWidget(
                 comment: comment,
-                level: _level + 1,
+                level: level + 1,
+              )
+            else if (comment is MoreComments)
+              LoadMoreComments(
+                comment: comment,
+                level: level,
+                commentBorderColor: commentBorderColor,
+                collapseComment: collapseComment,
               ),
       ],
+    );
+  }
+}
+
+class LoadMoreComments extends StatefulWidget {
+  final MoreComments comment;
+  final int level;
+  final List<Color> commentBorderColor;
+  final void Function() collapseComment;
+
+  const LoadMoreComments({
+    Key key,
+    this.comment,
+    this.level,
+    this.commentBorderColor,
+    this.collapseComment,
+  }) : super(key: key);
+
+  @override
+  _LoadMoreCommentsState createState() => _LoadMoreCommentsState();
+}
+
+class _LoadMoreCommentsState extends State<LoadMoreComments> {
+  List<dynamic> replies;
+  bool isLoading = false;
+
+  void loadComments() {
+    setState(() {
+      isLoading = true;
+    });
+    widget.comment.comments().then((res) {
+      setState(() {
+        isLoading = false;
+        replies = res;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (replies != null) {
+      for (dynamic reply in replies)
+        if (reply is Comment)
+          return ExpandedComment(
+            level: widget.level,
+            commentBorderColor: widget.commentBorderColor,
+            comment: reply,
+            collapseComment: widget.collapseComment,
+          );
+        else if (reply is MoreComments)
+          LoadMoreComments(
+            comment: reply,
+            level: widget.level,
+            commentBorderColor: widget.commentBorderColor,
+          );
+    }
+    return GestureDetector(
+      onTap: loadComments,
+      child: Column(
+        children: [
+          Card(
+            elevation: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              margin: EdgeInsets.only(
+                left: widget.level > 0 ? widget.level * 4.0 : 0.0,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  left: BorderSide(
+                    width: 4.0,
+                    color: widget.level < widget.commentBorderColor.length
+                        ? widget.commentBorderColor[widget.level]
+                        : Colors.cyan,
+                  ),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.arrow_right),
+                          Text(
+                            'load more comments (${widget.comment.count} ${widget.comment.count == 1 ? 'reply' : 'replies'})',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.blueGrey,
+                            ),
+                          ),
+                          if (isLoading)
+                            Container(
+                              margin: const EdgeInsets.only(left: 8.0),
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                              height: 10,
+                              width: 10,
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
