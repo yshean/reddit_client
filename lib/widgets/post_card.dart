@@ -1,5 +1,6 @@
 import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
+import 'package:html_unescape/html_unescape.dart';
 import 'package:reddit_client/screens/post_details.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -56,15 +57,10 @@ class _PostCardState extends State<PostCard> {
             ),
             SizedBox(height: 4),
             GestureDetector(
-              onTap: () async {
-                final updatedSubmission =
-                    await Navigator.of(context).push(MaterialPageRoute(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
                   builder: (_) => PostDetails(_submission),
                 ));
-                if (mounted)
-                  setState(() {
-                    _submission = updatedSubmission;
-                  });
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +71,7 @@ class _PostCardState extends State<PostCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _submission.title,
+                          HtmlUnescape().convert(_submission.title),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(

@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
+import 'package:html_unescape/html_unescape.dart';
 import 'package:reddit_client/widgets/comment/comment_list.dart';
 import 'package:reddit_client/widgets/post_content/post_content.dart';
 import 'package:reddit_client/widgets/post_info.dart';
@@ -35,12 +34,7 @@ class _PostDetailsState extends State<PostDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: InkResponse(
-          child: Icon(Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
-          onTap: () => Navigator.of(context).pop(_post),
-        ),
-      ),
+      appBar: AppBar(),
       body: _post == null
           ? Center(
               child: CircularProgressIndicator(),
@@ -60,7 +54,7 @@ class _PostDetailsState extends State<PostDetails> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _post.title,
+                            HtmlUnescape().convert(_post.title),
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 16.0,
