@@ -15,7 +15,7 @@ class FeedRequested extends FeedEvent {
   final bool loadMore;
 
   FeedRequested({
-    this.limit = 20,
+    this.limit = 10,
     this.loadMore = false,
     this.filter,
   }) : assert(filter != null);
@@ -43,7 +43,7 @@ class FeedRefreshRequested extends FeedEvent {
   final FeedFilter filter;
 
   FeedRefreshRequested({
-    this.limit = 20,
+    this.limit = 10,
     this.filter,
   }) : assert(filter != null);
 
