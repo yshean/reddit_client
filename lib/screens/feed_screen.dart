@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
-import 'package:reddit_client/search/search_bloc.dart';
+import 'package:reddit_client/subreddit_search/subreddit_search_bloc.dart';
 import 'package:reddit_client/widgets/feed_switcher.dart';
 import 'package:reddit_client/widgets/post_card.dart';
-import 'package:reddit_client/widgets/reddit_search.dart';
+import 'package:reddit_client/widgets/subreddit_search.dart';
 
 class FeedScreen extends StatefulWidget {
   @override
@@ -40,10 +40,10 @@ class _FeedScreenState extends State<FeedScreen> {
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
-              context.read<SearchBloc>().add(SearchCleared());
+              context.read<SubredditSearchBloc>().add(SearchSubredditCleared());
               showSearch(
                 context: context,
-                delegate: RedditSearch(),
+                delegate: SubredditSearch(),
               );
             },
           ),

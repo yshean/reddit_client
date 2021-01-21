@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:reddit_client/search/search_bloc.dart';
+import 'package:reddit_client/post_search/post_search_bloc.dart';
+import 'package:reddit_client/subreddit_search/subreddit_search_bloc.dart';
+import 'package:reddit_client/widgets/post_search.dart';
 import 'package:reddit_client/widgets/subreddit_tile.dart';
 
-class RedditSearch extends SearchDelegate<String> {
+class SubredditSearch extends SearchDelegate<String> {
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -38,8 +40,9 @@ class RedditSearch extends SearchDelegate<String> {
   @override
   Widget buildSuggestions(BuildContext context) {
     if (query.isNotEmpty) {
-      BlocProvider.of<SearchBloc>(context).add(SearchRequested(query));
-      return BlocBuilder<SearchBloc, SearchState>(
+      BlocProvider.of<SubredditSearchBloc>(context)
+          .add(SearchSubredditRequested(query));
+      return BlocBuilder<SubredditSearchBloc, SubredditSearchState>(
         builder: (context, state) {
           if (state is SearchSubredditInProgress) {
             return Center(
@@ -48,13 +51,17 @@ class RedditSearch extends SearchDelegate<String> {
           }
           if (state is SearchSubredditSuccess) {
             if (state.result.isEmpty) {
-              return Center(child: Text('No result found'));
+              return SearchPostLink(query);
             }
             return ListView.builder(
               itemCount: state.result.length,
-              itemBuilder: (context, index) => SubredditTile(
-                subreddit: state.result[index],
-              ),
+              itemBuilder: (context, index) {
+                if (index == state.result.length - 1)
+                  return SearchPostLink(query);
+                return SubredditTile(
+                  subreddit: state.result[index],
+                );
+              },
             );
           }
           return Container();
@@ -62,5 +69,32 @@ class RedditSearch extends SearchDelegate<String> {
       );
     }
     return Container();
+  }
+}
+
+class SearchPostLink extends StatelessWidget {
+  final String query;
+
+  const SearchPostLink(this.query);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(
+        'Posts with "$query..."',
+        style: TextStyle(
+          color: Colors.blue,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      onTap: () {
+        context.read<PostSearchBloc>().add(SearchPostCleared());
+        showSearch(
+          query: query,
+          context: context,
+          delegate: PostSearch(),
+        );
+      },
+    );
   }
 }
