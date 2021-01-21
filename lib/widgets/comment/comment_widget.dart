@@ -23,6 +23,7 @@ class CommentWidget extends StatefulWidget {
 class _CommentWidgetState extends State<CommentWidget> {
   int get _level => widget.level;
   bool _collapseChildren = false;
+  Comment _comment;
 
   final List<Color> commentBorderColor = [
     Colors.grey,
@@ -39,12 +40,24 @@ class _CommentWidgetState extends State<CommentWidget> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _comment = widget.comment;
+  }
+
+  void refreshList() {
+    setState(() {
+      _comment = _comment;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (_collapseChildren)
       return CollapsedComment(
         level: _level,
         commentBorderColor: commentBorderColor,
-        comment: widget.comment,
+        comment: _comment,
         expandComment: () {
           setState(() {
             _collapseChildren = false;
@@ -54,12 +67,13 @@ class _CommentWidgetState extends State<CommentWidget> {
     return ExpandedComment(
       level: _level,
       commentBorderColor: commentBorderColor,
-      comment: widget.comment,
+      comment: _comment,
       collapseComment: () {
         setState(() {
           _collapseChildren = true;
         });
       },
+      refreshList: refreshList,
     );
   }
 }
@@ -154,6 +168,7 @@ class ExpandedComment extends StatelessWidget {
   final List<Color> commentBorderColor;
   final Comment comment;
   final void Function() collapseComment;
+  final void Function() refreshList;
 
   const ExpandedComment({
     Key key,
@@ -161,6 +176,7 @@ class ExpandedComment extends StatelessWidget {
     this.commentBorderColor,
     this.comment,
     this.collapseComment,
+    this.refreshList,
   }) : super(key: key);
 
   @override
@@ -260,18 +276,22 @@ class ExpandedComment extends StatelessWidget {
           ),
         ),
         if (comment.replies != null)
-          for (dynamic comment in comment.replies.comments)
-            if (comment is Comment)
+          for (MapEntry c in comment.replies.comments.asMap().entries)
+            if (c.value is Comment)
               CommentWidget(
-                comment: comment,
+                comment: c.value,
                 level: level + 1,
               )
-            else if (comment is MoreComments)
+            else if (c.value is MoreComments)
               LoadMoreComments(
-                comment: comment,
-                level: level,
+                comment: c.value,
+                level: level + 1,
                 commentBorderColor: commentBorderColor,
-                collapseComment: collapseComment,
+                addToCommentList: (newComments) {
+                  comment.replies.comments.removeAt(c.key);
+                  comment.replies.comments.insertAll(c.key, newComments);
+                  refreshList();
+                },
               ),
       ],
     );
@@ -282,14 +302,14 @@ class LoadMoreComments extends StatefulWidget {
   final MoreComments comment;
   final int level;
   final List<Color> commentBorderColor;
-  final void Function() collapseComment;
+  final void Function(List<dynamic>) addToCommentList;
 
   const LoadMoreComments({
     Key key,
     this.comment,
     this.level,
     this.commentBorderColor,
-    this.collapseComment,
+    this.addToCommentList,
   }) : super(key: key);
 
   @override
@@ -297,39 +317,22 @@ class LoadMoreComments extends StatefulWidget {
 }
 
 class _LoadMoreCommentsState extends State<LoadMoreComments> {
-  List<dynamic> replies;
-  bool isLoading = false;
+  bool _isLoading = false;
 
   void loadComments() {
     setState(() {
-      isLoading = true;
+      _isLoading = true;
     });
-    widget.comment.comments().then((res) {
+    widget.comment.comments(update: false).then((res) {
+      widget.addToCommentList(res);
       setState(() {
-        isLoading = false;
-        replies = res;
+        _isLoading = false;
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (replies != null) {
-      for (dynamic reply in replies)
-        if (reply is Comment)
-          return ExpandedComment(
-            level: widget.level,
-            commentBorderColor: widget.commentBorderColor,
-            comment: reply,
-            collapseComment: widget.collapseComment,
-          );
-        else if (reply is MoreComments)
-          LoadMoreComments(
-            comment: reply,
-            level: widget.level,
-            commentBorderColor: widget.commentBorderColor,
-          );
-    }
     return GestureDetector(
       onTap: loadComments,
       child: Column(
@@ -369,7 +372,7 @@ class _LoadMoreCommentsState extends State<LoadMoreComments> {
                               color: Colors.blueGrey,
                             ),
                           ),
-                          if (isLoading)
+                          if (_isLoading)
                             Container(
                               margin: const EdgeInsets.only(left: 8.0),
                               child: CircularProgressIndicator(strokeWidth: 2),

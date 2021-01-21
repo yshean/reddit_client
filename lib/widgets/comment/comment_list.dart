@@ -9,67 +9,45 @@ class CommentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (post.comments == null) {
-      return FutureBuilder(
-        future: post.refreshComments(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  for (dynamic topComment in snapshot.data.comments)
-                    if (topComment is Comment)
-                      CommentWidget(comment: topComment, level: 0)
-                ],
-              );
-            } else {
-              if (snapshot.hasError) {
-                return Text("Couldn't retrieve comments - ${snapshot.error}");
-              }
-              return Text(
-                "--- No comments ---",
-                // style: TextStyle(
-                //   color: lightGreyColor,
-                // ),
-              );
-            }
+    return FutureBuilder(
+      future: post.refreshComments(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                for (dynamic topComment in snapshot.data.comments)
+                  if (topComment is Comment)
+                    CommentWidget(comment: topComment, level: 0)
+              ],
+            );
           } else {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 15.0),
-                child: CircularProgressIndicator(
-                    // valueColor: AlwaysStoppedAnimation<Color>(
-                    //   redditOrange,
-                    // ),
-                    // backgroundColor: darkGreyColor,
-                    ),
-              ),
+            if (snapshot.hasError) {
+              return Text("Couldn't retrieve comments - ${snapshot.error}");
+            }
+            return Text(
+              "--- No comments ---",
+              // style: TextStyle(
+              //   color: lightGreyColor,
+              // ),
             );
           }
-        },
-      );
-    } else if (post.comments.comments.isNotEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          for (dynamic topComment in post.comments.comments)
-            if (topComment is Comment)
-              CommentWidget(
-                comment: topComment,
-                level: 0,
-              ),
-        ],
-      );
-    } else {
-      return Text(
-        "--- No comments ---",
-        // style: TextStyle(
-        //   color: lightGreyColor,
-        // ),
-      );
-    }
+        } else {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: CircularProgressIndicator(
+                  // valueColor: AlwaysStoppedAnimation<Color>(
+                  //   redditOrange,
+                  // ),
+                  // backgroundColor: darkGreyColor,
+                  ),
+            ),
+          );
+        }
+      },
+    );
   }
 }
