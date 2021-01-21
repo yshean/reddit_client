@@ -12,7 +12,7 @@ class PostInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        Wrap(
           children: [
             Text(
               'by ${post.author} in ',
