@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/post_search/post_search_bloc.dart';
+import 'package:reddit_client/widgets/post_card.dart';
 
 class PostSearch extends SearchDelegate<String> {
   @override
@@ -70,8 +71,8 @@ class PostSearch extends SearchDelegate<String> {
                   );
                 }
                 if (index < state.result.length) {
-                  return ListTile(
-                    title: Text(state.result[index].title),
+                  return PostCard(
+                    submission: state.result[index],
                   );
                 }
                 return null;
