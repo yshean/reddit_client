@@ -14,7 +14,7 @@ class SubredditTile extends StatelessWidget {
       subtitle: Text(
           'Community • ${NumberFormat().format(subreddit.data['subscribers'])} members'),
       onTap: () {
-        Navigator.of(context).pushNamed(
+        Navigator.of(context).popAndPushNamed(
           '/subreddit',
           arguments: subreddit,
         );
