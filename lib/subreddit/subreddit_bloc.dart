@@ -41,7 +41,9 @@ class SubredditBloc extends Bloc<SubredditEvent, SubredditState> {
       subredditName: event.subreddit,
       filter: event.filter,
       limit: event.limit,
-      after: event.loadMore ? _subredditContents.last.fullname : null,
+      after: event.loadMore && _subredditContents.isNotEmpty
+          ? _subredditContents.last.fullname
+          : null,
     )
         .listen(
       (content) {
