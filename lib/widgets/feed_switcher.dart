@@ -20,6 +20,9 @@ class FeedSwitcher extends StatelessWidget {
       child: Center(
         child: LayoutBuilder(
           builder: (context, constraints) => ToggleButtons(
+            color: Color(0xFF014A60),
+            fillColor: Colors.white,
+            selectedColor: Color(0xFF014A60),
             borderRadius: BorderRadius.circular(5),
             constraints: BoxConstraints.expand(
               width: (constraints.maxWidth - 16) / 5,

@@ -47,7 +47,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     if (feedRepository == null || searchRepository == null) {
       return MaterialApp(
-        title: 'Reddit Client',
+        title: 'Amber',
         home: Scaffold(body: Center(child: CircularProgressIndicator())),
       );
     }
@@ -69,9 +69,18 @@ class _MyAppState extends State<MyApp> {
         )
       ],
       child: MaterialApp(
-        title: 'Reddit Client',
+        title: 'Amber',
         onGenerateRoute: _appRouter.onGenerateRoute,
+        theme: AppTheme.lightTheme,
       ),
+    );
+  }
+}
+
+class AppTheme {
+  static ThemeData get lightTheme {
+    return ThemeData(
+      primaryColor: Colors.amber,
     );
   }
 }
