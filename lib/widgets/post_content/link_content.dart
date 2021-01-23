@@ -68,6 +68,8 @@ class _LinkContentState extends State<LinkContent> {
                       padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
                       child: Text(
                         info.title,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
