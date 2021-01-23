@@ -83,7 +83,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 ),
               ],
               bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(20),
+                preferredSize: const Size.fromHeight(30),
                 child: FeedSwitcher(
                   selectedFilter: _selectedFilter,
                   setSelectedFilter: (filter) {
