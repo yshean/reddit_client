@@ -18,7 +18,7 @@ class SearchSubredditRequested extends SubredditSearchEvent {
 
 class SearchSubredditLoaded extends SubredditSearchEvent {
   final DateTime updatedAt;
-  final List<Subreddit> result;
+  final List<SubredditRef> result;
 
   SearchSubredditLoaded(this.updatedAt, this.result);
 

@@ -36,10 +36,11 @@ class SubredditSearchBloc
       if (refs.isEmpty) {
         add(SearchSubredditLoaded(DateTime.now(), []));
       } else {
-        final List<Subreddit> populated = await Future.wait(refs
-            .sublist(0, refs.length < 5 ? refs.length : 5)
-            .map((ref) => ref.populate()));
-        add(SearchSubredditLoaded(DateTime.now(), populated));
+        // final List<Subreddit> populated = await Future.wait(refs
+        //     .sublist(0, refs.length < 5 ? refs.length : 5)
+        //     .map((ref) => ref.populate()));
+        add(SearchSubredditLoaded(DateTime.now(),
+            refs.sublist(0, refs.length < 5 ? refs.length : 5)));
       }
     } else if (event is SearchSubredditLoaded) {
       yield SearchSubredditSuccess(event.updatedAt, event.result);
