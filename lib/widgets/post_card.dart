@@ -29,50 +29,50 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  _submission.author,
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
-                ),
-                SizedBox(width: 8),
-                Text(
-                  timeago.format(_submission.createdUtc),
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 4),
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => PostDetails(_submission),
-                ));
-              },
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => PostDetails(_submission),
+        ));
+      },
+      child: Card(
+        elevation: 0,
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Flexible(
+                  Text(
+                    _submission.author,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    timeago.format(_submission.createdUtc),
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           HtmlUnescape().convert(_submission.title),
-                          maxLines: 2,
+                          maxLines: 5,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
@@ -85,10 +85,54 @@ class _PostCardState extends State<PostCard> {
                         Text(
                           'r/${_submission.subreddit.displayName}',
                           style: TextStyle(
-                            color: Colors.grey,
+                            color: Colors.orange,
                             fontWeight: FontWeight.w600,
                             fontSize: 12,
                           ),
+                        ),
+                        SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.comment_outlined,
+                                  color: Colors.grey,
+                                  size: 18,
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  _submission.numComments.toString(),
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.arrow_upward,
+                                  color: Colors.grey,
+                                  size: 18,
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  _submission.upvotes.toString(),
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
                         ),
                       ],
                     ),
@@ -98,55 +142,8 @@ class _PostCardState extends State<PostCard> {
                       : Image.network(thumbnailSrc, scale: 1.5),
                 ],
               ),
-            ),
-            SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.comment_outlined,
-                      color: Colors.grey,
-                      size: 18,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      _submission.numComments.toString(),
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.arrow_upward,
-                      color: Colors.grey,
-                      size: 18,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      _submission.upvotes.toString(),
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                    SizedBox(width: 4),
-                    Icon(
-                      Icons.arrow_downward,
-                      color: Colors.grey,
-                      size: 18,
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

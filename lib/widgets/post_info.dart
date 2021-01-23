@@ -31,7 +31,7 @@ class PostInfo extends StatelessWidget {
               child: Text(
                 'r/${post.subreddit.displayName}',
                 style: TextStyle(
-                  color: Colors.blueGrey,
+                  color: Colors.orange,
                   fontWeight: FontWeight.w700,
                   fontSize: 12,
                 ),
@@ -46,7 +46,9 @@ class PostInfo extends StatelessWidget {
               ),
             ),
             Text(
-              timeago.format(post.createdUtc, locale: 'en_short'),
+              timeago
+                  .format(post.createdUtc, locale: 'en_short')
+                  .replaceAll(" ", ""),
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 12,
@@ -62,7 +64,7 @@ class PostInfo extends StatelessWidget {
               color: Colors.grey,
               size: 18,
             ),
-            SizedBox(width: 4),
+            SizedBox(width: 2),
             Text(
               post.upvotes.toString(),
               style: TextStyle(
@@ -71,13 +73,14 @@ class PostInfo extends StatelessWidget {
                 fontSize: 12,
               ),
             ),
-            SizedBox(width: 4),
-            Icon(
-              Icons.arrow_downward,
-              color: Colors.grey,
-              size: 18,
+            Text(
+              '  •  ',
+              style: TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
             ),
-            SizedBox(width: 8),
             Text(
               '${(post.upvoteRatio * 100).round()}% upvoted',
               style: TextStyle(

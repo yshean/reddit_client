@@ -20,7 +20,8 @@ class _PostDetailsState extends State<PostDetails> {
   @override
   void initState() {
     super.initState();
-    refreshPost();
+    // refreshPost();
+    _post = widget.post;
   }
 
   Future<void> refreshPost() => widget.post.refresh().then((post) {
@@ -34,57 +35,67 @@ class _PostDetailsState extends State<PostDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: _post == null
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : RefreshIndicator(
-              onRefresh: refreshPost,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            HtmlUnescape().convert(_post.title),
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16.0,
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              floating: true,
+              snap: true,
+              forceElevated: innerBoxIsScrolled,
+            ),
+          ];
+        },
+        body: _post == null
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : RefreshIndicator(
+                onRefresh: refreshPost,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              HtmlUnescape().convert(_post.title),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16.0,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 8.0),
-                          PostContent(_post),
-                          SizedBox(height: 8.0),
-                          PostInfo(_post),
-                          SizedBox(height: 4.0),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      child: Text(
-                        'COMMENTS',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w600,
+                            SizedBox(height: 8.0),
+                            PostContent(_post),
+                            SizedBox(height: 8.0),
+                            PostInfo(_post),
+                            SizedBox(height: 4.0),
+                          ],
                         ),
                       ),
-                    ),
-                    CommentList(post: _post),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: Text(
+                          'COMMENTS',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      CommentList(post: _post),
+                    ],
+                  ),
                 ),
               ),
-            ),
+      ),
     );
   }
 }

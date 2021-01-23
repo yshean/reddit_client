@@ -147,7 +147,7 @@ class _FeedScreenState extends State<FeedScreen> {
                                       filter: _selectedFilter,
                                     ));
                               }
-                              if (index == state.feeds.length) {
+                              if (index != 0 && index == state.feeds.length) {
                                 return Center(
                                   child: Padding(
                                     padding: const EdgeInsets.all(16.0),
