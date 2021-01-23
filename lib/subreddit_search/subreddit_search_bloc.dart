@@ -30,7 +30,7 @@ class SubredditSearchBloc
   ) async* {
     if (event is SearchSubredditRequested) {
       // Uncomment below for showing loading indicator
-      // yield SearchSubredditInProgress();
+      yield SearchSubredditInProgress();
       final List<SubredditRef> refs =
           await _searchRepository.searchSubreddit(event.query);
       if (refs.isEmpty) {
