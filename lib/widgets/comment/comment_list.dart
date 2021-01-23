@@ -14,6 +14,8 @@ class CommentList extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
+            if (snapshot.data.comments.isEmpty)
+              return Center(child: Text("No comments"));
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
