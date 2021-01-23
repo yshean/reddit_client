@@ -62,85 +62,93 @@ class _PostCardState extends State<PostCard> {
                 ],
               ),
               SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          HtmlUnescape().convert(_submission.title),
-                          maxLines: 5,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: _submission.clicked
-                                ? Colors.grey
-                                : Colors.black,
+              IntrinsicHeight(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                HtmlUnescape().convert(_submission.title),
+                                maxLines: 5,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: _submission.clicked
+                                      ? Colors.grey
+                                      : Colors.black,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'r/${_submission.subreddit.displayName}',
+                                style: TextStyle(
+                                  color: Colors.orange,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'r/${_submission.subreddit.displayName}',
-                          style: TextStyle(
-                            color: Colors.orange,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
+                          SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.comment_outlined,
+                                    color: Colors.grey,
+                                    size: 18,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    _submission.numComments.toString(),
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.arrow_upward,
+                                    color: Colors.grey,
+                                    size: 18,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    _submission.upvotes.toString(),
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
                           ),
-                        ),
-                        SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.comment_outlined,
-                                  color: Colors.grey,
-                                  size: 18,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  _submission.numComments.toString(),
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.arrow_upward,
-                                  color: Colors.grey,
-                                  size: 18,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  _submission.upvotes.toString(),
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  thumbnailSrc == null
-                      ? SizedBox.shrink()
-                      : Image.network(thumbnailSrc, scale: 1.5),
-                ],
+                    thumbnailSrc == null
+                        ? SizedBox.shrink()
+                        : Image.network(thumbnailSrc, scale: 1.5),
+                  ],
+                ),
               ),
             ],
           ),
