@@ -12,11 +12,12 @@ class SubredditFeedLoadInProgress extends SubredditState {}
 class SubredditFeedLoadSuccess extends SubredditState {
   final DateTime updatedAt;
   final List<Submission> feeds;
+  final bool hasReachedMax;
 
-  SubredditFeedLoadSuccess(this.updatedAt, this.feeds);
+  SubredditFeedLoadSuccess(this.updatedAt, this.feeds, this.hasReachedMax);
 
   @override
-  List<Object> get props => [updatedAt, feeds];
+  List<Object> get props => [updatedAt, feeds, hasReachedMax];
 }
 
 class SubredditFeedLoadFailure extends SubredditState {

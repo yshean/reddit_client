@@ -150,10 +150,13 @@ class _FeedScreenState extends State<FeedScreen> {
                           context: context,
                           removeTop: true,
                           child: ListView.builder(
-                            itemCount: state.feeds.length + 1,
+                            itemCount: state.feeds.length +
+                                (state.hasReachedMax ? 0 : 1),
                             itemBuilder: (context, index) {
-                              if (index ==
-                                  state.feeds.length - NEXT_PAGE_THRESHOLD) {
+                              if (!state.hasReachedMax &&
+                                  index ==
+                                      state.feeds.length -
+                                          NEXT_PAGE_THRESHOLD) {
                                 context.read<FeedBloc>().add(FeedRequested(
                                       loadMore: true,
                                       filter: _selectedFilter,

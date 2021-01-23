@@ -23,7 +23,11 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     if (event is FeedRequested) {
       yield* _mapFeedRequestedToState(event);
     } else if (event is FeedLoaded) {
-      yield FeedLoadSuccess(event.updatedAt, event.content);
+      yield FeedLoadSuccess(
+        event.updatedAt,
+        event.content,
+        event.hasReachedMax,
+      );
     } else if (event is FeedRefreshRequested) {
       yield* _mapFeedRefreshRequestedToState(event);
     }
@@ -35,18 +39,27 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       _contents.clear();
       yield FeedLoadInProgress();
     }
+    int _newContentLength = 0;
     _feedSubscription = _feedRepository
         .getFeed(
       filter: event.filter,
       limit: event.limit,
-      after: event.loadMore ? _contents.last.fullname : null,
+      after: event.loadMore && _contents.isNotEmpty
+          ? _contents.last.fullname
+          : null,
     )
         .listen(
       (content) {
         _contents.add(content);
+        _newContentLength++;
       },
       onDone: () {
-        add(FeedLoaded(DateTime.now(), _contents));
+        add(FeedLoaded(
+          DateTime.now(),
+          _contents,
+          _newContentLength < event.limit,
+        ));
+        _newContentLength = 0;
       },
     );
   }
@@ -57,6 +70,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     _contents.clear();
     yield FeedRefreshInProgress();
 
+    int _newContentLength = 0;
     _feedSubscription = _feedRepository
         .getFeed(
       filter: event.filter,
@@ -65,9 +79,15 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
         .listen(
       (content) {
         _contents.add(content);
+        _newContentLength++;
       },
       onDone: () {
-        add(FeedLoaded(DateTime.now(), _contents));
+        add(FeedLoaded(
+          DateTime.now(),
+          _contents,
+          _newContentLength < event.limit,
+        ));
+        _newContentLength = 0;
       },
     );
   }

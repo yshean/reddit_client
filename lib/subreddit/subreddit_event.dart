@@ -32,11 +32,12 @@ class SubredditFeedRequested extends SubredditEvent {
 class SubredditFeedLoaded extends SubredditEvent {
   final DateTime updatedAt;
   final List<Submission> content;
+  final bool hasReachedMax;
 
-  SubredditFeedLoaded(this.updatedAt, this.content);
+  SubredditFeedLoaded(this.updatedAt, this.content, this.hasReachedMax);
 
   @override
-  List<Object> get props => [updatedAt, content];
+  List<Object> get props => [updatedAt, content, hasReachedMax];
 }
 
 class SubredditFeedRefreshRequested extends SubredditEvent {

@@ -62,7 +62,7 @@ class PostSearch extends SearchDelegate<String> {
                         loadMore: true,
                       ));
                 }
-                if (index == state.result.length) {
+                if (index != 0 && index == state.result.length) {
                   return Center(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),

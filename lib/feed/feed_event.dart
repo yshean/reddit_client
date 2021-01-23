@@ -31,11 +31,12 @@ class FeedRequested extends FeedEvent {
 class FeedLoaded extends FeedEvent {
   final DateTime updatedAt;
   final List<Submission> content;
+  final bool hasReachedMax;
 
-  FeedLoaded(this.updatedAt, this.content);
+  FeedLoaded(this.updatedAt, this.content, this.hasReachedMax);
 
   @override
-  List<Object> get props => [updatedAt, content];
+  List<Object> get props => [updatedAt, content, hasReachedMax];
 }
 
 class FeedRefreshRequested extends FeedEvent {

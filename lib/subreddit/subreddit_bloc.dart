@@ -23,7 +23,11 @@ class SubredditBloc extends Bloc<SubredditEvent, SubredditState> {
     if (event is SubredditFeedRequested) {
       yield* _mapFeedRequestedToState(event);
     } else if (event is SubredditFeedLoaded) {
-      yield SubredditFeedLoadSuccess(event.updatedAt, event.content);
+      yield SubredditFeedLoadSuccess(
+        event.updatedAt,
+        event.content,
+        event.hasReachedMax,
+      );
     } else if (event is SubredditFeedRefreshRequested) {
       yield* _mapFeedRefreshRequestedToState(event);
     }
@@ -36,6 +40,7 @@ class SubredditBloc extends Bloc<SubredditEvent, SubredditState> {
       _subredditContents.clear();
       yield SubredditFeedLoadInProgress();
     }
+    int _newContentLength = 0;
     _feedSubscription = _feedRepository
         .getSubredditFeed(
       subredditName: event.subreddit,
@@ -48,9 +53,15 @@ class SubredditBloc extends Bloc<SubredditEvent, SubredditState> {
         .listen(
       (content) {
         _subredditContents.add(content);
+        _newContentLength++;
       },
       onDone: () {
-        add(SubredditFeedLoaded(DateTime.now(), _subredditContents));
+        add(SubredditFeedLoaded(
+          DateTime.now(),
+          _subredditContents,
+          _newContentLength < event.limit,
+        ));
+        _newContentLength = 0;
       },
     );
   }
@@ -61,6 +72,7 @@ class SubredditBloc extends Bloc<SubredditEvent, SubredditState> {
     _subredditContents.clear();
     yield SubredditFeedRefreshInProgress();
 
+    int _newContentLength = 0;
     _feedSubscription = _feedRepository
         .getSubredditFeed(
       subredditName: event.subreddit,
@@ -70,9 +82,15 @@ class SubredditBloc extends Bloc<SubredditEvent, SubredditState> {
         .listen(
       (content) {
         _subredditContents.add(content);
+        _newContentLength++;
       },
       onDone: () {
-        add(SubredditFeedLoaded(DateTime.now(), _subredditContents));
+        add(SubredditFeedLoaded(
+          DateTime.now(),
+          _subredditContents,
+          _newContentLength < event.limit,
+        ));
+        _newContentLength = 0;
       },
     );
   }

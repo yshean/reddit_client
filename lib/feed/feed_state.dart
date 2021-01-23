@@ -12,11 +12,12 @@ class FeedLoadInProgress extends FeedState {}
 class FeedLoadSuccess extends FeedState {
   final DateTime updatedAt;
   final List<Submission> feeds;
+  final bool hasReachedMax;
 
-  FeedLoadSuccess(this.updatedAt, this.feeds);
+  FeedLoadSuccess(this.updatedAt, this.feeds, this.hasReachedMax);
 
   @override
-  List<Object> get props => [updatedAt, feeds];
+  List<Object> get props => [updatedAt, feeds, hasReachedMax];
 }
 
 class FeedLoadFailure extends FeedState {
