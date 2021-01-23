@@ -48,7 +48,15 @@ class _MyAppState extends State<MyApp> {
     if (feedRepository == null || searchRepository == null) {
       return MaterialApp(
         title: 'Amber',
-        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+        home: Scaffold(
+          body: Center(
+            child: Container(
+              width: 300,
+              height: 300,
+              child: Image.asset('assets/icons/amber_splash.png'),
+            ),
+          ),
+        ),
       );
     }
 

@@ -40,6 +40,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icons/
 
 flutter_icons:
   android: "ic_launcher"
@@ -49,7 +51,7 @@ flutter_icons:
 flutter_application_id:
   android:
     id: "com.yshean.amber"
-    name: "Amber for Reddit"
+    name: "Amber"
   ios:
     id: "com.yshean.amber"
-    name: "Amber for Reddit"
+    name: "Amber"
