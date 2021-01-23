@@ -37,7 +37,6 @@ class _FeedScreenState extends State<FeedScreen> {
     return Scaffold(
       floatingActionButton: _showScrollToTopButton
           ? FloatingActionButton(
-              mini: true,
               backgroundColor: Colors.amber,
               child: Icon(Icons.keyboard_arrow_up),
               onPressed: () {
@@ -68,7 +67,10 @@ class _FeedScreenState extends State<FeedScreen> {
               forceElevated: innerBoxIsScrolled,
               actions: [
                 IconButton(
-                  icon: Icon(Icons.search),
+                  icon: Icon(
+                    Icons.search,
+                    color: Color(0xFF014A60),
+                  ),
                   onPressed: () {
                     context
                         .read<SubredditSearchBloc>()
@@ -104,11 +106,17 @@ class _FeedScreenState extends State<FeedScreen> {
                   _refreshCompleter = Completer();
                 }
               },
-              buildWhen: (_, state) => !(state is FeedRefreshInProgress),
+              // TODO: Somehow the content does not refresh
+              // buildWhen: (prevState, currentState) =>
+              //     !(prevState is FeedLoadSuccess &&
+              //         currentState is FeedRefreshInProgress),
               builder: (context, state) {
-                if (state is FeedLoadInProgress) {
-                  return Center(
-                    child: CircularProgressIndicator(),
+                if (state is FeedLoadInProgress ||
+                    state is FeedRefreshInProgress) {
+                  return Expanded(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
                   );
                 }
                 if (state is FeedLoadSuccess) {
@@ -122,12 +130,16 @@ class _FeedScreenState extends State<FeedScreen> {
                       },
                       child: NotificationListener<ScrollNotification>(
                         onNotification: (ScrollNotification scrollInfo) {
-                          if (scrollInfo.metrics.pixels >
-                              MediaQuery.of(context).size.height) {
+                          if (!_showScrollToTopButton &&
+                              scrollInfo.metrics.pixels >=
+                                  MediaQuery.of(context).size.height) {
                             setState(() {
                               _showScrollToTopButton = true;
                             });
-                          } else {
+                          }
+                          if (_showScrollToTopButton &&
+                              scrollInfo.metrics.pixels <
+                                  MediaQuery.of(context).size.height) {
                             setState(() {
                               _showScrollToTopButton = false;
                             });
@@ -168,8 +180,10 @@ class _FeedScreenState extends State<FeedScreen> {
                   );
                 }
                 if (state is FeedLoadFailure) {
-                  return Center(
-                    child: Text('Oops'),
+                  return Expanded(
+                    child: Center(
+                      child: Text('Oops'),
+                    ),
                   );
                 }
                 return null;
