@@ -209,6 +209,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_application_id:
+    dependency: "direct dev"
+    description:
+      name: flutter_application_id
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   flutter_bloc:
     dependency: "direct main"
     description:
