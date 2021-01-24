@@ -27,6 +27,26 @@ class ImageContent extends StatelessWidget {
           ),
         );
       },
+      errorBuilder: (context, error, stackTrace) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Container(
+            color: Colors.black12,
+            padding: const EdgeInsets.all(30),
+            child: Column(
+              children: [
+                Image.asset(
+                  'assets/icons/image-not-found.png',
+                  width: 36,
+                  height: 36,
+                ),
+                SizedBox(height: 12),
+                Text('Some error occurred while fetching the image'),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
