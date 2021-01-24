@@ -35,6 +35,35 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              child: Text(
+                'Amber for Reddit',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              decoration: BoxDecoration(
+                color: Colors.amber,
+              ),
+            ),
+            ListTile(
+              title: Text('Login'),
+              onTap: () async {
+                // final reddit = Reddit.createInstalledFlowInstance(
+                //   clientId: clientId,
+                //   userAgent: "flutter-yshean",
+                //   redirectUri: Uri.parse("https://google.com"),
+                // );
+                // print(reddit.auth.url(['*'], "diaporama-auth"));
+              },
+            ),
+          ],
+        ),
+      ),
       floatingActionButton: _showScrollToTopButton
           ? FloatingActionButton(
               backgroundColor: Colors.amber,
