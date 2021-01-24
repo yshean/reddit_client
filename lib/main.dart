@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,10 +13,22 @@ import 'package:reddit_client/secrets.dart';
 import 'package:reddit_client/simple_bloc_observer.dart';
 import 'package:reddit_client/subreddit/subreddit_bloc.dart';
 import 'package:reddit_client/subreddit_search/subreddit_search_bloc.dart';
+import 'package:uni_links/uni_links.dart';
 import 'package:uuid/uuid.dart';
 
-void main() {
+void main() async {
   Bloc.observer = SimpleBlocObserver();
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    Uri initialLink = await getInitialUri();
+    if (initialLink != null && initialLink.queryParameters["code"] != null) {
+      print('authCode: ${initialLink.queryParameters["code"]}');
+    }
+  } catch (e) {
+    throw (e);
+  }
+
   runApp(MyApp());
 }
 
@@ -28,8 +42,31 @@ class _MyAppState extends State<MyApp> {
   SearchRepository searchRepository;
   final AppRouter _appRouter = AppRouter();
 
+  StreamSubscription _sub;
+
   @override
   void initState() {
+    _sub = getUriLinksStream().listen((Uri uri) async {
+      // Use the uri and warn the user, if it is not correct
+      if (uri != null && uri.queryParameters["code"] != null) {
+        print('authCode: ${uri.queryParameters["code"]}');
+        final redditClient = Reddit.createInstalledFlowInstance(
+          clientId: clientId,
+          userAgent: "flutter-yshean",
+          redirectUri: Uri.parse("amberforreddit://yshean.com"),
+        );
+        await redditClient.auth.authorize(uri.queryParameters["code"]);
+        Redditor redditor = await redditClient.user.me();
+        print(redditor.displayName);
+        setState(() {
+          feedRepository = FeedRepository(redditClient);
+          searchRepository = SearchRepository(redditClient);
+        });
+        Navigator.of(context).pushReplacementNamed("/");
+      }
+    }, onError: (err) {
+      // Handle exception by warning the user their action did not succeed
+    });
     Reddit.createUntrustedReadOnlyInstance(
       clientId: clientId,
       userAgent: 'flutter-yshean',
@@ -41,6 +78,12 @@ class _MyAppState extends State<MyApp> {
       });
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
   }
 
   @override

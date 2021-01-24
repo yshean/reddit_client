@@ -2,6 +2,8 @@ PODS:
   - Flutter (1.0.0)
   - flutter_inappwebview (0.0.1):
     - Flutter
+  - uni_links (0.0.1):
+    - Flutter
   - url_launcher (0.0.1):
     - Flutter
   - video_player (0.0.1):
@@ -12,6 +14,7 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
+  - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - video_player (from `.symlinks/plugins/video_player/ios`)
   - wakelock (from `.symlinks/plugins/wakelock/ios`)
@@ -21,6 +24,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_inappwebview:
     :path: ".symlinks/plugins/flutter_inappwebview/ios"
+  uni_links:
+    :path: ".symlinks/plugins/uni_links/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
   video_player:
@@ -31,6 +36,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_inappwebview: 69dfbac46157b336ffbec19ca6dfd4638c7bf189
+  uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   video_player: 9cc823b1d9da7e8427ee591e8438bfbcde500e6e
   wakelock: bfc7955c418d0db797614075aabbc58a39ab5107
