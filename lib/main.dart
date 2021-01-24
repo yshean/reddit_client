@@ -89,6 +89,12 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       primaryColor: Colors.amber,
+      pageTransitionsTheme: PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
     );
   }
 }
