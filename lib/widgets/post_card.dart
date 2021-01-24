@@ -2,6 +2,7 @@ import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:reddit_client/screens/post_details.dart';
+import 'package:reddit_client/utils/convert_whitespace_char.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class PostCard extends StatefulWidget {
@@ -76,7 +77,8 @@ class _PostCardState extends State<PostCard> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                HtmlUnescape().convert(_submission.title),
+                                convertWhiteSpaceChar(
+                                    HtmlUnescape().convert(_submission.title)),
                                 maxLines: 5,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(

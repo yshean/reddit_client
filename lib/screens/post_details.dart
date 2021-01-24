@@ -1,6 +1,7 @@
 import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:reddit_client/utils/convert_whitespace_char.dart';
 import 'package:reddit_client/widgets/comment/comment_list.dart';
 import 'package:reddit_client/widgets/post_content/post_content.dart';
 import 'package:reddit_client/widgets/post_info.dart';
@@ -64,7 +65,8 @@ class _PostDetailsState extends State<PostDetails> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              HtmlUnescape().convert(_post.title),
+                              convertWhiteSpaceChar(
+                                  HtmlUnescape().convert(_post.title)),
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16.0,

@@ -18,7 +18,7 @@ class _LinkContentState extends State<LinkContent> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => launch(_post.url.toString()),
+      onTap: () => launch(_post.url.toString(), forceWebView: true),
       child: FlutterLinkPreview(
         url: _post.url.toString(),
         bodyStyle: TextStyle(

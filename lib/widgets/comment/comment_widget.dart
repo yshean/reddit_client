@@ -2,6 +2,7 @@ import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:reddit_client/utils/convert_whitespace_char.dart';
 import 'package:reddit_client/utils/custom_markdown_stylesheet.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
@@ -252,8 +253,10 @@ class ExpandedComment extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: MarkdownBody(
-                      data: HtmlUnescape().convert(comment.body),
-                      onTapLink: (text, link, _) => launch(link),
+                      data: convertWhiteSpaceChar(
+                          HtmlUnescape().convert(comment.body)),
+                      onTapLink: (text, link, _) =>
+                          launch(link, forceWebView: true),
                       styleSheet: customMarkdownStyleSheet,
                     ),
                   ),
