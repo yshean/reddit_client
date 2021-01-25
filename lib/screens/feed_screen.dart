@@ -1,11 +1,10 @@
 import 'dart:async';
 
-import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
-import 'package:reddit_client/secrets.dart';
+import 'package:reddit_client/repositories/auth_repository.dart';
 import 'package:reddit_client/subreddit_search/subreddit_search_bloc.dart';
 import 'package:reddit_client/widgets/feed_switcher.dart';
 import 'package:reddit_client/widgets/post_card.dart';
@@ -56,12 +55,21 @@ class _FeedScreenState extends State<FeedScreen> {
             ListTile(
               title: Text('Login'),
               onTap: () async {
-                final reddit = Reddit.createInstalledFlowInstance(
-                  clientId: clientId,
-                  userAgent: "flutter-yshean",
-                  redirectUri: Uri.parse("amberforreddit://yshean.com"),
-                );
-                launch(reddit.auth.url(['*'], "amber-dev").toString());
+                launch(context
+                    .read<AuthRepository>()
+                    .generateAuthUrl()
+                    .toString());
+                // final reddit = Reddit.createInstalledFlowInstance(
+                //   clientId: clientId,
+                //   userAgent: "flutter-yshean",
+                //   redirectUri: Uri.parse("amberforreddit://yshean.com"),
+                // );
+                // launch(reddit.auth.url(['*'], "amber-dev").toString());
+                // launch(context
+                //     .read<AuthRepository>()
+                //     .redditClient
+                //     .auth
+                //     .url(['*'], "amber-dev").toString());
               },
             ),
           ],
