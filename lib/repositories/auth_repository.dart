@@ -48,6 +48,11 @@ class AuthRepository {
       deviceId: Uuid().v4(),
     );
     // TODO: Clear the refresh token on device
+    _authClient = Reddit.createInstalledFlowInstance(
+      clientId: clientId,
+      userAgent: "flutter-yshean",
+      redirectUri: Uri.parse("amberforreddit://yshean.com"),
+    );
     _controller.add(AuthStatus.unauthenticated);
   }
 

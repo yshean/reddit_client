@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reddit_client/auth/auth_bloc.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
 import 'package:reddit_client/repositories/auth_repository.dart';
@@ -37,43 +38,68 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              child: Text(
-                'Amber for Reddit',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
+      drawer: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          if (state is Authenticated) {
+            return Drawer(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  DrawerHeader(
+                    child: Text(
+                      'u/${state.user.displayName}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.amber,
+                    ),
+                  ),
+                  ListTile(
+                    title: Text('Logout'),
+                    onTap: () async {
+                      context.read<AuthBloc>().add(AuthLogoutRequested());
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            );
+          }
+          return Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                DrawerHeader(
+                  child: Text(
+                    'Amber for Reddit',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.amber,
+                  ),
                 ),
-              ),
-              decoration: BoxDecoration(
-                color: Colors.amber,
-              ),
+                ListTile(
+                  title: Text('Login'),
+                  onTap: () async {
+                    launch(
+                      context
+                          .read<AuthRepository>()
+                          .generateAuthUrl()
+                          .toString(),
+                      forceSafariVC: false,
+                      forceWebView: false,
+                    );
+                    // Navigator.of(context).pushReplacementNamed("/profile");
+                  },
+                ),
+              ],
             ),
-            ListTile(
-              title: Text('Login'),
-              onTap: () async {
-                launch(context
-                    .read<AuthRepository>()
-                    .generateAuthUrl()
-                    .toString());
-                // final reddit = Reddit.createInstalledFlowInstance(
-                //   clientId: clientId,
-                //   userAgent: "flutter-yshean",
-                //   redirectUri: Uri.parse("amberforreddit://yshean.com"),
-                // );
-                // launch(reddit.auth.url(['*'], "amber-dev").toString());
-                // launch(context
-                //     .read<AuthRepository>()
-                //     .redditClient
-                //     .auth
-                //     .url(['*'], "amber-dev").toString());
-              },
-            ),
-          ],
-        ),
+          );
+        },
       ),
       floatingActionButton: _showScrollToTopButton
           ? FloatingActionButton(

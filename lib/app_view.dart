@@ -31,41 +31,11 @@ class _AppViewState extends State<AppView> {
       // Use the uri and warn the user, if it is not correct
       if (uri != null && uri.queryParameters["code"] != null) {
         final authCode = uri.queryParameters["code"];
-        print('authCode: $authCode');
         await context.read<AuthRepository>().login(authCode);
-        print(await context.read<AuthRepository>().getUser());
-        // final redditClient = Reddit.createInstalledFlowInstance(
-        //   clientId: clientId,
-        //   userAgent: "flutter-yshean",
-        //   redirectUri: Uri.parse("amberforreddit://yshean.com"),
-        // );
-        // await redditClient.auth.authorize(uri.queryParameters["code"]);
-        // Redditor redditor = await redditClient.user.me();
-        // print(redditor.displayName);
-        // final redditClient = context.read<AuthRepository>().redditClient;
-        // setState(() {
-        //   feedRepository = FeedRepository(redditClient);
-        //   searchRepository = SearchRepository(redditClient);
-        // });
-        // Cannot navigate here
-        // Navigator.of(context).pushReplacementNamed("/");
-        // SchedulerBinding.instance.addPostFrameCallback((_) {
-        //   Navigator.of(context).pushReplacementNamed("/");
-        // });
       }
     }, onError: (err) {
       // Handle exception by warning the user their action did not succeed
     });
-    // Reddit.createUntrustedReadOnlyInstance(
-    //   clientId: clientId,
-    //   userAgent: 'flutter-yshean',
-    //   deviceId: Uuid().v4(),
-    // ).then((redditClient) {
-    //   setState(() {
-    //     feedRepository = FeedRepository(redditClient);
-    //     searchRepository = SearchRepository(redditClient);
-    //   });
-    // });
     super.initState();
   }
 
