@@ -60,160 +60,169 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             )
           : null,
-      body: NestedScrollView(
-        controller: _scrollViewController,
-        floatHeaderSlivers: true,
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              title: BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  return Text(
-                    'u/${state.user.displayName}',
-                    style: TextStyle(
-                      color: Color(0xFF014A60),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  );
-                },
-              ),
-              floating: true,
-              snap: true,
-              forceElevated: innerBoxIsScrolled,
-              actions: [
-                PopupMenuButton(
-                  itemBuilder: (context) => [
-                    CheckedPopupMenuItem(
-                      child: Text('Hidden'),
-                    ),
-                    CheckedPopupMenuItem(
-                      child: Text('Upvoted'),
-                    ),
-                    CheckedPopupMenuItem(
-                      child: Text('Downvoted'),
-                    ),
-                  ],
-                ),
-              ],
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(30),
-                child: ProfileSectionSwitcher(
-                  selectedSection: _selectedSection,
-                  setSelectedSection: (section) {
-                    setState(() {
-                      _selectedSection = section;
-                    });
-                    _scrollViewController.jumpTo(0);
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is Unauthenticated || state is AuthUnknown) {
+            Navigator.of(context).pushReplacementNamed('/');
+          }
+        },
+        child: NestedScrollView(
+          controller: _scrollViewController,
+          floatHeaderSlivers: true,
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              SliverAppBar(
+                title: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state is Authenticated)
+                      return Text(
+                        'u/${state.user.displayName}',
+                        style: TextStyle(
+                          color: Color(0xFF014A60),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      );
+                    return Text('Profile');
                   },
                 ),
+                floating: true,
+                snap: true,
+                forceElevated: innerBoxIsScrolled,
+                actions: [
+                  PopupMenuButton(
+                    itemBuilder: (context) => [
+                      CheckedPopupMenuItem(
+                        child: Text('Hidden'),
+                      ),
+                      CheckedPopupMenuItem(
+                        child: Text('Upvoted'),
+                      ),
+                      CheckedPopupMenuItem(
+                        child: Text('Downvoted'),
+                      ),
+                    ],
+                  ),
+                ],
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(30),
+                  child: ProfileSectionSwitcher(
+                    selectedSection: _selectedSection,
+                    setSelectedSection: (section) {
+                      setState(() {
+                        _selectedSection = section;
+                      });
+                      _scrollViewController.jumpTo(0);
+                    },
+                  ),
+                ),
               ),
-            ),
-          ];
-        },
-        body: Column(
-          children: [
-            BlocConsumer<ProfileBloc, ProfileState>(
-              listener: (context, state) {
-                if (state is ProfileContentLoadSuccess) {
-                  _refreshCompleter?.complete();
-                  _refreshCompleter = Completer();
-                }
-              },
-              builder: (context, state) {
-                if (state is ProfileContentLoadInProgress ||
-                    state is ProfileContentRefreshInProgress) {
-                  return Expanded(
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-                if (state is ProfileContentLoadSuccess) {
-                  return Expanded(
-                    child: RefreshIndicator(
-                      onRefresh: onRefresh,
-                      child: NotificationListener<ScrollNotification>(
-                        onNotification: (ScrollNotification scrollInfo) {
-                          if (!_showScrollToTopButton &&
-                              scrollInfo.metrics.pixels >=
-                                  MediaQuery.of(context).size.height) {
-                            setState(() {
-                              _showScrollToTopButton = true;
-                            });
-                          }
-                          if (_showScrollToTopButton &&
-                              scrollInfo.metrics.pixels <
-                                  MediaQuery.of(context).size.height) {
-                            setState(() {
-                              _showScrollToTopButton = false;
-                            });
-                          }
-                          return false;
-                        },
-                        child: MediaQuery.removePadding(
-                          context: context,
-                          removeTop: true,
-                          child: state.feeds.length == 0
-                              ? Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('Nothing here'),
-                                    SizedBox(height: 8),
-                                    RaisedButton(
-                                      onPressed: onRefresh,
-                                      child: Text('Refresh'),
-                                    ),
-                                  ],
-                                )
-                              : ListView.builder(
-                                  itemCount: state.feeds.length +
-                                      (state.hasReachedMax ? 0 : 1),
-                                  itemBuilder: (context, index) {
-                                    if (!state.hasReachedMax &&
-                                        index ==
-                                            state.feeds.length -
-                                                NEXT_PAGE_THRESHOLD) {
-                                      context
-                                          .read<ProfileBloc>()
-                                          .add(ProfileContentRequested(
-                                            section: _selectedSection,
-                                            loadMore: true,
-                                            filter: DEFAULT_PROFILE_FILTER,
-                                          ));
-                                    }
-                                    if (index != 0 &&
-                                        index == state.feeds.length) {
-                                      return Center(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16.0),
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                      );
-                                    }
-                                    if (index < state.feeds.length) {
-                                      final submission = state.feeds[index];
-                                      return PostCard(submission: submission);
-                                    }
-                                    return null;
-                                  },
-                                ),
+            ];
+          },
+          body: Column(
+            children: [
+              BlocConsumer<ProfileBloc, ProfileState>(
+                listener: (context, state) {
+                  if (state is ProfileContentLoadSuccess) {
+                    _refreshCompleter?.complete();
+                    _refreshCompleter = Completer();
+                  }
+                },
+                builder: (context, state) {
+                  if (state is ProfileContentLoadInProgress ||
+                      state is ProfileContentRefreshInProgress) {
+                    return Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                  if (state is ProfileContentLoadSuccess) {
+                    return Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: onRefresh,
+                        child: NotificationListener<ScrollNotification>(
+                          onNotification: (ScrollNotification scrollInfo) {
+                            if (!_showScrollToTopButton &&
+                                scrollInfo.metrics.pixels >=
+                                    MediaQuery.of(context).size.height) {
+                              setState(() {
+                                _showScrollToTopButton = true;
+                              });
+                            }
+                            if (_showScrollToTopButton &&
+                                scrollInfo.metrics.pixels <
+                                    MediaQuery.of(context).size.height) {
+                              setState(() {
+                                _showScrollToTopButton = false;
+                              });
+                            }
+                            return false;
+                          },
+                          child: MediaQuery.removePadding(
+                            context: context,
+                            removeTop: true,
+                            child: state.feeds.length == 0
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('Nothing here'),
+                                      SizedBox(height: 8),
+                                      RaisedButton(
+                                        onPressed: onRefresh,
+                                        child: Text('Refresh'),
+                                      ),
+                                    ],
+                                  )
+                                : ListView.builder(
+                                    itemCount: state.feeds.length +
+                                        (state.hasReachedMax ? 0 : 1),
+                                    itemBuilder: (context, index) {
+                                      if (!state.hasReachedMax &&
+                                          index ==
+                                              state.feeds.length -
+                                                  NEXT_PAGE_THRESHOLD) {
+                                        context
+                                            .read<ProfileBloc>()
+                                            .add(ProfileContentRequested(
+                                              section: _selectedSection,
+                                              loadMore: true,
+                                              filter: DEFAULT_PROFILE_FILTER,
+                                            ));
+                                      }
+                                      if (index != 0 &&
+                                          index == state.feeds.length) {
+                                        return Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(16.0),
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        );
+                                      }
+                                      if (index < state.feeds.length) {
+                                        final submission = state.feeds[index];
+                                        return PostCard(submission: submission);
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }
-                if (state is ProfileContentLoadFailure) {
-                  return Expanded(
-                    child: Center(
-                      child: Text('Oops'),
-                    ),
-                  );
-                }
-                return null;
-              },
-            )
-          ],
+                    );
+                  }
+                  if (state is ProfileContentLoadFailure) {
+                    return Expanded(
+                      child: Center(
+                        child: Text('Oops'),
+                      ),
+                    );
+                  }
+                  return null;
+                },
+              )
+            ],
+          ),
         ),
       ),
     );
