@@ -10,11 +10,7 @@ class AuthRepository {
   Reddit redditClient;
   Redditor _user;
   final _controller = StreamController<AuthStatus>();
-  Reddit _authClient = Reddit.createInstalledFlowInstance(
-    clientId: clientId,
-    userAgent: "flutter-yshean",
-    redirectUri: Uri.parse("amberforreddit://yshean.com"),
-  );
+  Reddit _authClient;
 
   Stream<AuthStatus> get status async* {
     yield AuthStatus.unauthenticated;
@@ -31,6 +27,11 @@ class AuthRepository {
   }
 
   Uri generateAuthUrl() {
+    _authClient = Reddit.createInstalledFlowInstance(
+      clientId: clientId,
+      userAgent: "flutter-yshean",
+      redirectUri: Uri.parse("amberforreddit://yshean.com"),
+    );
     return _authClient.auth.url(['*'], "amber-dev");
   }
 
