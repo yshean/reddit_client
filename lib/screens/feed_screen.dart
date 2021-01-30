@@ -25,6 +25,9 @@ class _FeedScreenState extends State<FeedScreen> {
   void initState() {
     super.initState();
     _refreshCompleter = Completer<void>();
+    context.read<FeedBloc>().add(FeedRequested(
+          filter: DEFAULT_FRONT_FILTER,
+        ));
   }
 
   @override

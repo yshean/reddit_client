@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/app_router.dart';
 import 'package:reddit_client/auth/auth_bloc.dart';
-import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
 import 'package:reddit_client/post_search/post_search_bloc.dart';
 import 'package:reddit_client/profile/profile_bloc.dart';
@@ -57,8 +56,7 @@ class _AppViewState extends State<AppView> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => FeedBloc(feedRepository)
-            ..add(FeedRequested(filter: DEFAULT_FRONT_FILTER)),
+          create: (context) => FeedBloc(feedRepository),
         ),
         BlocProvider(
           create: (context) => SubredditBloc(feedRepository),
