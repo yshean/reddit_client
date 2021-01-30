@@ -1,6 +1,7 @@
 import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:reddit_client/screens/feed_screen.dart';
+import 'package:reddit_client/screens/profile_screen.dart';
 import 'package:reddit_client/screens/subreddit_screen.dart';
 
 class AppRouter {
@@ -12,6 +13,8 @@ class AppRouter {
         final SubredditRef subredditRef = settings.arguments;
         return MaterialPageRoute(
             builder: (_) => SubredditScreen(subredditRef: subredditRef));
+      case '/me/posts':
+        return MaterialPageRoute(builder: (_) => ProfileScreen());
       default:
         return null;
     }

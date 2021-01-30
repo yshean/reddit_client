@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reddit_client/app_router.dart';
+import 'package:reddit_client/auth/auth_bloc.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
 import 'package:reddit_client/post_search/post_search_bloc.dart';
+import 'package:reddit_client/profile/profile_bloc.dart';
 import 'package:reddit_client/repositories/auth_repository.dart';
 import 'package:reddit_client/repositories/index.dart';
 import 'package:reddit_client/repositories/search_repository.dart';
@@ -47,20 +49,6 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
-    // if (feedRepository == null || searchRepository == null) {
-    //   return MaterialApp(
-    //     title: 'Amber',
-    //     home: Scaffold(
-    //       body: Center(
-    //         child: Container(
-    //           width: 300,
-    //           height: 300,
-    //           child: Image.asset('assets/icons/amber_splash.png'),
-    //         ),
-    //       ),
-    //     ),
-    //   );
-    // }
     final redditClient =
         context.select((AuthRepository repository) => repository.redditClient);
     final feedRepository = FeedRepository(redditClient);
@@ -80,6 +68,10 @@ class _AppViewState extends State<AppView> {
         ),
         BlocProvider(
           create: (context) => PostSearchBloc(searchRepository),
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (context) => ProfileBloc(authBloc: context.read<AuthBloc>()),
         )
       ],
       child: MaterialApp(
@@ -94,7 +86,7 @@ class _AppViewState extends State<AppView> {
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
-      primaryColor: Colors.amber,
+      primarySwatch: Colors.amber,
       pageTransitionsTheme: PageTransitionsTheme(
         builders: {
           TargetPlatform.android: CupertinoPageTransitionsBuilder(),

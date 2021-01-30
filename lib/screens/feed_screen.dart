@@ -2,15 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:reddit_client/auth/auth_bloc.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
-import 'package:reddit_client/repositories/auth_repository.dart';
 import 'package:reddit_client/subreddit_search/subreddit_search_bloc.dart';
+import 'package:reddit_client/widgets/app_scaffold.dart';
 import 'package:reddit_client/widgets/feed_switcher.dart';
 import 'package:reddit_client/widgets/post_card.dart';
 import 'package:reddit_client/widgets/subreddit_search.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class FeedScreen extends StatefulWidget {
   @override
@@ -37,70 +35,7 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          if (state is Authenticated) {
-            return Drawer(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  DrawerHeader(
-                    child: Text(
-                      'u/${state.user.displayName}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.amber,
-                    ),
-                  ),
-                  ListTile(
-                    title: Text('Logout'),
-                    onTap: () async {
-                      context.read<AuthBloc>().add(AuthLogoutRequested());
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
-            );
-          }
-          return Drawer(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                DrawerHeader(
-                  child: Text(
-                    'Amber for Reddit',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.amber,
-                  ),
-                ),
-                ListTile(
-                  title: Text('Login'),
-                  onTap: () async {
-                    launch(
-                      context
-                          .read<AuthRepository>()
-                          .generateAuthUrl()
-                          .toString(),
-                      forceSafariVC: false,
-                      forceWebView: false,
-                    );
-                    // Navigator.of(context).pushReplacementNamed("/profile");
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+    return AppScaffold(
       floatingActionButton: _showScrollToTopButton
           ? FloatingActionButton(
               backgroundColor: Colors.amber,
