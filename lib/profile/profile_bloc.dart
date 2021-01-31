@@ -46,6 +46,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     if (event is ProfileContentRequested) {
       yield* _mapProfileContentRequestedToState(event);
     } else if (event is ProfileContentLoaded) {
+      print('Received event ProfileContentLoaded for section ${event.section}');
       yield ProfileContentLoadSuccess(
         feeds: event.content,
         hasReachedMax: event.hasReachedMax,
@@ -140,13 +141,25 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           section: event.section,
         ));
         _newContentLength = 0;
-        // Cache the _contents if the ProfileSection.UPVOTED
+        // Cache the _contents
         // to save time when checking if the entry is upvoted
         if (event.section == ProfileSection.UPVOTED) {
           final List<String> ids =
               _contents[event.section].map<String>((c) => c.id).toList();
           _box = await Hive.openBox('cache');
           _box.put('upvoted', jsonEncode(ids));
+        }
+        if (event.section == ProfileSection.DOWNVOTED) {
+          final List<String> ids =
+              _contents[event.section].map<String>((c) => c.id).toList();
+          _box = await Hive.openBox('cache');
+          _box.put('downvoted', jsonEncode(ids));
+        }
+        if (event.section == ProfileSection.SAVED) {
+          final List<String> ids =
+              _contents[event.section].map<String>((c) => c.id).toList();
+          _box = await Hive.openBox('cache');
+          _box.put('saved', jsonEncode(ids));
         }
       },
     );
@@ -207,7 +220,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         _contents[event.section].add(content);
         _newContentLength++;
       },
-      onDone: () {
+      onDone: () async {
         add(ProfileContentLoaded(
           updatedAt: DateTime.now(),
           content: _contents[event.section],
@@ -215,6 +228,26 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           section: event.section,
         ));
         _newContentLength = 0;
+        // Cache the _contents
+        // to save time when checking if the entry is upvoted
+        if (event.section == ProfileSection.UPVOTED) {
+          final List<String> ids =
+              _contents[event.section].map<String>((c) => c.id).toList();
+          _box = await Hive.openBox('cache');
+          _box.put('upvoted', jsonEncode(ids));
+        }
+        if (event.section == ProfileSection.DOWNVOTED) {
+          final List<String> ids =
+              _contents[event.section].map<String>((c) => c.id).toList();
+          _box = await Hive.openBox('cache');
+          _box.put('downvoted', jsonEncode(ids));
+        }
+        if (event.section == ProfileSection.SAVED) {
+          final List<String> ids =
+              _contents[event.section].map<String>((c) => c.id).toList();
+          _box = await Hive.openBox('cache');
+          _box.put('saved', jsonEncode(ids));
+        }
       },
     );
   }

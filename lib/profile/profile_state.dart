@@ -14,6 +14,11 @@ class ProfileContentLoadInProgress extends ProfileState {
 
   @override
   List<Object> get props => [section];
+
+  @override
+  String toString() {
+    return 'ProfileContentLoadInProgress(section: $section)';
+  }
 }
 
 class ProfileContentLoadSuccess extends ProfileState {
@@ -31,6 +36,11 @@ class ProfileContentLoadSuccess extends ProfileState {
 
   @override
   List<Object> get props => [updatedAt, feeds, hasReachedMax, section];
+
+  @override
+  String toString() {
+    return 'ProfileContentLoadSuccess(section: $section)';
+  }
 }
 
 class ProfileContentLoadFailure extends ProfileState {

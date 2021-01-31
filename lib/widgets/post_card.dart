@@ -31,20 +31,33 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   Submission _submission;
   bool _isUpvoted;
+  bool _isDownvoted;
+  bool _isSaved;
   List<String> _upvotedIds;
+  List<String> _downvotedIds;
+  List<String> _savedIds;
 
   @override
   void initState() {
     super.initState();
     _submission = widget.submission;
-    // Get the state of upvoted of the submission
+    _isUpvoted = false;
+    _isDownvoted = false;
+    _isSaved = false;
+    // Get the state of the submission
     Hive.openBox('cache').then((box) {
       if (box.isNotEmpty) {
-        _upvotedIds = List<String>.from(jsonDecode(box.get('upvoted')));
+        _upvotedIds = List<String>.from(jsonDecode(box.get('upvoted') ?? '[]'));
         if (_upvotedIds.contains(_submission.id)) _isUpvoted = true;
+
+        _downvotedIds =
+            List<String>.from(jsonDecode(box.get('downvoted') ?? '[]'));
+        if (_downvotedIds.contains(_submission.id)) _isDownvoted = true;
+
+        _savedIds = List<String>.from(jsonDecode(box.get('saved') ?? '[]'));
+        if (_savedIds.contains(_submission.id)) _isSaved = true;
       }
     });
-    _isUpvoted = false;
   }
 
   String get thumbnailSrc =>
@@ -65,13 +78,30 @@ class _PostCardState extends State<PostCard> {
       return BlocListener<ProfileBloc, ProfileState>(
         listener: (context, profileState) {
           if (profileState is ProfileContentLoadSuccess &&
-              profileState.section == ProfileSection.UPVOTED) {
+              (profileState.section == ProfileSection.UPVOTED ||
+                  profileState.section == ProfileSection.DOWNVOTED ||
+                  profileState.section == ProfileSection.SAVED)) {
             Hive.openBox('cache').then((box) {
               if (box.isNotEmpty) {
-                _upvotedIds = List<String>.from(jsonDecode(box.get('upvoted')));
+                _upvotedIds =
+                    List<String>.from(jsonDecode(box.get('upvoted') ?? '[]'));
                 if (_upvotedIds.contains(_submission.id))
                   setState(() {
                     _isUpvoted = true;
+                  });
+
+                _downvotedIds =
+                    List<String>.from(jsonDecode(box.get('downvoted') ?? '[]'));
+                if (_downvotedIds.contains(_submission.id))
+                  setState(() {
+                    _isDownvoted = true;
+                  });
+
+                _savedIds =
+                    List<String>.from(jsonDecode(box.get('saved') ?? '[]'));
+                if (_savedIds.contains(_submission.id))
+                  setState(() {
+                    _isSaved = true;
                   });
               }
             });
@@ -95,15 +125,21 @@ class _PostCardState extends State<PostCard> {
                     onTap: () async {
                       setState(() {
                         _isUpvoted = !_isUpvoted;
+                        _isDownvoted = false;
                       });
                       if (!_isUpvoted) {
                         await _submission.clearVote();
                       } else {
                         await _submission.upvote();
                       }
-                      // Also refetch upvoted ids
+
+                      // Also refetch upvoted/downvoted ids
                       context.read<ProfileBloc>().add(ProfileContentRequested(
                             section: ProfileSection.UPVOTED,
+                            filter: DEFAULT_PROFILE_FILTER,
+                          ));
+                      context.read<ProfileBloc>().add(ProfileContentRequested(
+                            section: ProfileSection.DOWNVOTED,
                             filter: DEFAULT_PROFILE_FILTER,
                           ));
                       Slidable.of(context).close();
@@ -112,15 +148,56 @@ class _PostCardState extends State<PostCard> {
                   );
                 if (index == 1)
                   return IconSlideAction(
-                    caption: 'Downvote',
+                    caption: _isDownvoted ? 'Downvoted' : 'Downvote',
                     color: Colors.red,
-                    icon: Icons.arrow_downward_outlined,
+                    icon: _isDownvoted
+                        ? Icons.check
+                        : Icons.arrow_downward_outlined,
+                    onTap: () async {
+                      setState(() {
+                        _isDownvoted = !_isDownvoted;
+                        _isUpvoted = false;
+                      });
+                      if (!_isDownvoted) {
+                        await _submission.clearVote();
+                      } else {
+                        await _submission.downvote();
+                      }
+                      // Also refetch upvoted & downvoted ids
+                      context.read<ProfileBloc>().add(ProfileContentRequested(
+                            section: ProfileSection.UPVOTED,
+                            filter: DEFAULT_PROFILE_FILTER,
+                          ));
+                      context.read<ProfileBloc>().add(ProfileContentRequested(
+                            section: ProfileSection.DOWNVOTED,
+                            filter: DEFAULT_PROFILE_FILTER,
+                          ));
+                      Slidable.of(context).close();
+                    },
+                    closeOnTap: false,
                   );
                 if (index == 2)
                   return IconSlideAction(
-                    caption: 'Save',
+                    caption: _isSaved ? 'Saved' : 'Save',
                     color: Colors.amberAccent,
-                    icon: Icons.star_border,
+                    icon: _isSaved ? Icons.check : Icons.star_border,
+                    onTap: () async {
+                      setState(() {
+                        _isSaved = !_isSaved;
+                      });
+                      if (!_isSaved) {
+                        await _submission.unsave();
+                      } else {
+                        await _submission.save();
+                      }
+                      // Also refetch saved ids
+                      context.read<ProfileBloc>().add(ProfileContentRequested(
+                            section: ProfileSection.SAVED,
+                            filter: DEFAULT_PROFILE_FILTER,
+                          ));
+                      Slidable.of(context).close();
+                    },
+                    closeOnTap: false,
                   );
                 if (index == 3)
                   return IconSlideAction(

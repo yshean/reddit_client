@@ -29,7 +29,8 @@ class AuthRepository {
         clientId: clientId,
         userAgent: 'flutter-yshean',
       );
-      _controller.add(AuthStatus.authenticated);
+      final user = await getUser();
+      if (user != null) _controller.add(AuthStatus.authenticated);
     } else {
       // Make sure the data is cleared despite the last logout attempt was successful or not
       await Hive.deleteBoxFromDisk('auth');

@@ -44,6 +44,11 @@ class ProfileContentLoaded extends ProfileEvent {
 
   @override
   List<Object> get props => [updatedAt, content, hasReachedMax, section];
+
+  @override
+  String toString() {
+    return 'ProfileContentLoaded(section: $section)';
+  }
 }
 
 class ProfileContentRefreshRequested extends ProfileEvent {
