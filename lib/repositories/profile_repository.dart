@@ -39,4 +39,37 @@ class ProfileRepository {
 
     return redditor.saved(params: params);
   }
+
+  Stream<UserContent> getHidden({
+    int limit,
+    String after,
+    ProfileContentFilter filter,
+  }) {
+    final params = {'limit': limit.toString()};
+    if (after != null) params['after'] = after;
+
+    return redditor.hidden(params: params);
+  }
+
+  Stream<UserContent> getUpvoted({
+    int limit,
+    String after,
+    ProfileContentFilter filter,
+  }) {
+    final params = {'limit': limit.toString()};
+    if (after != null) params['after'] = after;
+
+    return redditor.upvoted(params: params);
+  }
+
+  Stream<UserContent> getDownvoted({
+    int limit,
+    String after,
+    ProfileContentFilter filter,
+  }) {
+    final params = {'limit': limit.toString()};
+    if (after != null) params['after'] = after;
+
+    return redditor.downvoted(params: params);
+  }
 }

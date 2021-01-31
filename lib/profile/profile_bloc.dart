@@ -84,6 +84,33 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
               : null,
         );
         break;
+      case ProfileSection.HIDDEN:
+        _contentStream = _profileRepository?.getHidden(
+          filter: event.filter,
+          limit: event.limit,
+          after: event.loadMore && _contents.isNotEmpty
+              ? _contents.last.fullname
+              : null,
+        );
+        break;
+      case ProfileSection.UPVOTED:
+        _contentStream = _profileRepository?.getUpvoted(
+          filter: event.filter,
+          limit: event.limit,
+          after: event.loadMore && _contents.isNotEmpty
+              ? _contents.last.fullname
+              : null,
+        );
+        break;
+      case ProfileSection.DOWNVOTED:
+        _contentStream = _profileRepository?.getDownvoted(
+          filter: event.filter,
+          limit: event.limit,
+          after: event.loadMore && _contents.isNotEmpty
+              ? _contents.last.fullname
+              : null,
+        );
+        break;
       default:
         break;
     }
@@ -128,6 +155,24 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         break;
       case ProfileSection.SAVED:
         _contentStream = _profileRepository?.getSaved(
+          filter: event.filter,
+          limit: event.limit,
+        );
+        break;
+      case ProfileSection.HIDDEN:
+        _contentStream = _profileRepository?.getHidden(
+          filter: event.filter,
+          limit: event.limit,
+        );
+        break;
+      case ProfileSection.UPVOTED:
+        _contentStream = _profileRepository?.getUpvoted(
+          filter: event.filter,
+          limit: event.limit,
+        );
+        break;
+      case ProfileSection.DOWNVOTED:
+        _contentStream = _profileRepository?.getDownvoted(
           filter: event.filter,
           limit: event.limit,
         );

@@ -94,14 +94,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     itemBuilder: (context) => [
                       CheckedPopupMenuItem(
                         child: Text('Hidden'),
+                        checked: _selectedSection == ProfileSection.HIDDEN,
+                        value: ProfileSection.HIDDEN,
                       ),
                       CheckedPopupMenuItem(
                         child: Text('Upvoted'),
+                        checked: _selectedSection == ProfileSection.UPVOTED,
+                        value: ProfileSection.UPVOTED,
                       ),
                       CheckedPopupMenuItem(
                         child: Text('Downvoted'),
+                        checked: _selectedSection == ProfileSection.DOWNVOTED,
+                        value: ProfileSection.DOWNVOTED,
                       ),
                     ],
+                    onSelected: (ProfileSection section) {
+                      if (section == ProfileSection.HIDDEN) {
+                        setState(() {
+                          _selectedSection = ProfileSection.HIDDEN;
+                        });
+                        context.read<ProfileBloc>().add(ProfileContentRequested(
+                              section: ProfileSection.HIDDEN,
+                              filter: DEFAULT_PROFILE_FILTER,
+                            ));
+                      }
+                      if (section == ProfileSection.UPVOTED) {
+                        setState(() {
+                          _selectedSection = ProfileSection.UPVOTED;
+                        });
+                        context.read<ProfileBloc>().add(ProfileContentRequested(
+                              section: ProfileSection.UPVOTED,
+                              filter: DEFAULT_PROFILE_FILTER,
+                            ));
+                      }
+                      if (section == ProfileSection.DOWNVOTED) {
+                        setState(() {
+                          _selectedSection = ProfileSection.DOWNVOTED;
+                        });
+                        context.read<ProfileBloc>().add(ProfileContentRequested(
+                              section: ProfileSection.DOWNVOTED,
+                              filter: DEFAULT_PROFILE_FILTER,
+                            ));
+                      }
+                    },
                   ),
                 ],
                 bottom: PreferredSize(
