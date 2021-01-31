@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:reddit_client/app_view.dart';
 import 'package:reddit_client/auth/auth_bloc.dart';
 import 'package:reddit_client/repositories/auth_repository.dart';
@@ -18,6 +20,10 @@ void main() async {
   // } catch (e) {
   //   throw (e);
   // }
+
+  // Initialise Hive
+  await Hive.initFlutter();
+
   final authRepository = AuthRepository();
   await authRepository.init();
 

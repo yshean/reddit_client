@@ -24,7 +24,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (event is AuthStatusChanged) {
       yield await _mapAuthStatusChangedToState(event);
     } else if (event is AuthLogoutRequested) {
-      _authRepository.logout();
+      yield LogoutInProgress();
+      await _authRepository.logout();
+      yield LogoutSuccess();
     }
   }
 

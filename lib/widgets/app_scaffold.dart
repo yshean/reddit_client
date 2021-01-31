@@ -23,6 +23,7 @@ class AppScaffold extends StatelessWidget {
       appBar: appBar,
       drawer: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
+          if (state is LogoutSuccess) Navigator.of(context).pop();
           if (state is Authenticated) {
             return Drawer(
               child: ListView(
@@ -66,10 +67,12 @@ class AppScaffold extends StatelessWidget {
                     },
                   ),
                   ListTile(
-                    title: Text('Logout'),
+                    title: state is LogoutInProgress
+                        ? Text('Logging out...')
+                        : Text('Logout'),
+                    enabled: !(state is LogoutInProgress),
                     onTap: () async {
                       context.read<AuthBloc>().add(AuthLogoutRequested());
-                      Navigator.of(context).pop();
                     },
                   ),
                 ],

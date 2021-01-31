@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:draw/draw.dart';
+import 'package:hive/hive.dart';
 import 'package:reddit_client/secrets.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,6 +12,7 @@ class AuthRepository {
   Redditor _user;
   final _controller = StreamController<AuthStatus>();
   Reddit _authClient;
+  Box box;
 
   Stream<AuthStatus> get status async* {
     yield AuthStatus.unauthenticated;
@@ -18,12 +20,23 @@ class AuthRepository {
   }
 
   Future<void> init() async {
-    // TODO: Can also try to read from storage if refresh token is available
-    redditClient = await Reddit.createUntrustedReadOnlyInstance(
-      clientId: clientId,
-      userAgent: 'flutter-yshean',
-      deviceId: Uuid().v4(),
-    );
+    // Try to read from storage if refresh token is available
+    box = await Hive.openBox('auth');
+    if (box.isNotEmpty) {
+      final credentials = box.get('credentials');
+      redditClient = Reddit.restoreAuthenticatedInstance(
+        credentials,
+        clientId: clientId,
+        userAgent: 'flutter-yshean',
+      );
+      _controller.add(AuthStatus.authenticated);
+    } else {
+      redditClient = await Reddit.createUntrustedReadOnlyInstance(
+        clientId: clientId,
+        userAgent: 'flutter-yshean',
+        deviceId: Uuid().v4(),
+      );
+    }
   }
 
   Uri generateAuthUrl() {
@@ -37,7 +50,8 @@ class AuthRepository {
 
   Future<void> login(String authCode) async {
     await _authClient.auth.authorize(authCode);
-    // TODO: Save the refresh token on device
+    // Save the credentials on device
+    box.put('credentials', _authClient.auth.credentials.toJson());
     redditClient = _authClient;
     _controller.add(AuthStatus.authenticated);
   }
@@ -48,7 +62,8 @@ class AuthRepository {
       userAgent: 'flutter-yshean',
       deviceId: Uuid().v4(),
     );
-    // TODO: Clear the refresh token on device
+    // Clear the credentials on device
+    await box.deleteFromDisk();
     _authClient = Reddit.createInstalledFlowInstance(
       clientId: clientId,
       userAgent: "flutter-yshean",

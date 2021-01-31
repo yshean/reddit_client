@@ -28,3 +28,11 @@ class Authenticated extends AuthState {
 class Unauthenticated extends AuthState {
   Unauthenticated() : super(status: AuthStatus.unauthenticated);
 }
+
+class LogoutInProgress extends AuthState {
+  LogoutInProgress() : super(status: AuthStatus.unauthenticated);
+}
+
+class LogoutSuccess extends AuthState {
+  LogoutSuccess() : super(status: AuthStatus.unauthenticated);
+}
