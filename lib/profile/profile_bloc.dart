@@ -18,7 +18,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final AuthBloc authBloc;
 
   StreamSubscription _authSubscription;
-  StreamSubscription _feedSubscription;
+  Map<ProfileSection, StreamSubscription> _feedSubscriptions = {
+    ProfileSection.POSTS: null,
+    ProfileSection.COMMENTS: null,
+    ProfileSection.SAVED: null,
+    ProfileSection.HIDDEN: null,
+    ProfileSection.UPVOTED: null,
+    ProfileSection.DOWNVOTED: null,
+  };
   Redditor _redditor;
   ProfileRepository _profileRepository;
   Map<ProfileSection, List<dynamic>> _contents = {
@@ -46,7 +53,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     if (event is ProfileContentRequested) {
       yield* _mapProfileContentRequestedToState(event);
     } else if (event is ProfileContentLoaded) {
-      print('Received event ProfileContentLoaded for section ${event.section}');
       yield ProfileContentLoadSuccess(
         feeds: event.content,
         hasReachedMax: event.hasReachedMax,
@@ -60,86 +66,64 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   Stream<ProfileState> _mapProfileContentRequestedToState(
       ProfileContentRequested event) async* {
-    _feedSubscription?.cancel();
+    _feedSubscriptions[event.section]?.cancel();
     if (!event.loadMore) {
       _contents[event.section].clear();
       yield ProfileContentLoadInProgress(event.section);
     }
 
     int _newContentLength = 0;
-    Stream<UserContent> _contentStream;
+    Map<ProfileSection, Stream<UserContent>> _contentStreams = {
+      ProfileSection.POSTS: _profileRepository?.getPosts(
+        filter: event.filter,
+        limit: event.limit,
+        after: event.loadMore && _contents.isNotEmpty
+            ? _contents[event.section].last.fullname
+            : null,
+      ),
+      ProfileSection.COMMENTS: _profileRepository?.getComments(
+        filter: event.filter,
+        limit: event.limit,
+        after: event.loadMore && _contents.isNotEmpty
+            ? _contents[event.section].last.fullname
+            : null,
+      ),
+      ProfileSection.SAVED: _profileRepository?.getSaved(
+        filter: event.filter,
+        limit: event.limit,
+        after: event.loadMore && _contents.isNotEmpty
+            ? _contents[event.section].last.fullname
+            : null,
+      ),
+      ProfileSection.HIDDEN: _profileRepository?.getHidden(
+        filter: event.filter,
+        limit: event.limit,
+        after: event.loadMore && _contents.isNotEmpty
+            ? _contents[event.section].last.fullname
+            : null,
+      ),
+      ProfileSection.UPVOTED: _profileRepository?.getUpvoted(
+        filter: event.filter,
+        limit: event.limit,
+        after: event.loadMore && _contents.isNotEmpty
+            ? _contents[event.section].last.fullname
+            : null,
+      ),
+      ProfileSection.DOWNVOTED: _profileRepository?.getDownvoted(
+        filter: event.filter,
+        limit: event.limit,
+        after: event.loadMore && _contents.isNotEmpty
+            ? _contents[event.section].last.fullname
+            : null,
+      ),
+    };
 
-    switch (event.section) {
-      case ProfileSection.POSTS:
-        _contentStream = _profileRepository?.getPosts(
-          filter: event.filter,
-          limit: event.limit,
-          after: event.loadMore && _contents.isNotEmpty
-              ? _contents[event.section].last.fullname
-              : null,
-        );
-        break;
-      case ProfileSection.COMMENTS:
-        _contentStream = _profileRepository?.getComments(
-          filter: event.filter,
-          limit: event.limit,
-          after: event.loadMore && _contents.isNotEmpty
-              ? _contents[event.section].last.fullname
-              : null,
-        );
-        break;
-      case ProfileSection.SAVED:
-        _contentStream = _profileRepository?.getSaved(
-          filter: event.filter,
-          limit: event.limit,
-          after: event.loadMore && _contents.isNotEmpty
-              ? _contents[event.section].last.fullname
-              : null,
-        );
-        break;
-      case ProfileSection.HIDDEN:
-        _contentStream = _profileRepository?.getHidden(
-          filter: event.filter,
-          limit: event.limit,
-          after: event.loadMore && _contents.isNotEmpty
-              ? _contents[event.section].last.fullname
-              : null,
-        );
-        break;
-      case ProfileSection.UPVOTED:
-        _contentStream = _profileRepository?.getUpvoted(
-          filter: event.filter,
-          limit: event.limit,
-          after: event.loadMore && _contents.isNotEmpty
-              ? _contents[event.section].last.fullname
-              : null,
-        );
-        break;
-      case ProfileSection.DOWNVOTED:
-        _contentStream = _profileRepository?.getDownvoted(
-          filter: event.filter,
-          limit: event.limit,
-          after: event.loadMore && _contents.isNotEmpty
-              ? _contents[event.section].last.fullname
-              : null,
-        );
-        break;
-      default:
-        break;
-    }
-
-    _feedSubscription = _contentStream?.listen(
+    _feedSubscriptions[event.section] = _contentStreams[event.section]?.listen(
       (content) {
         _contents[event.section].add(content);
         _newContentLength++;
       },
       onDone: () async {
-        add(ProfileContentLoaded(
-          updatedAt: DateTime.now(),
-          content: _contents[event.section],
-          hasReachedMax: _newContentLength < event.limit,
-          section: event.section,
-        ));
         _newContentLength = 0;
         // Cache the _contents
         // to save time when checking if the entry is upvoted
@@ -147,86 +131,70 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           final List<String> ids =
               _contents[event.section].map<String>((c) => c.id).toList();
           _box = await Hive.openBox('cache');
-          _box.put('upvoted', jsonEncode(ids));
+          await _box.put('upvoted', jsonEncode(ids));
         }
         if (event.section == ProfileSection.DOWNVOTED) {
           final List<String> ids =
               _contents[event.section].map<String>((c) => c.id).toList();
           _box = await Hive.openBox('cache');
-          _box.put('downvoted', jsonEncode(ids));
+          await _box.put('downvoted', jsonEncode(ids));
         }
         if (event.section == ProfileSection.SAVED) {
           final List<String> ids =
               _contents[event.section].map<String>((c) => c.id).toList();
           _box = await Hive.openBox('cache');
-          _box.put('saved', jsonEncode(ids));
+          await _box.put('saved', jsonEncode(ids));
         }
+        add(ProfileContentLoaded(
+          updatedAt: DateTime.now(),
+          content: _contents[event.section],
+          hasReachedMax: _newContentLength < event.limit,
+          section: event.section,
+        ));
       },
     );
   }
 
   Stream<ProfileState> _mapProfileContentRefreshRequestedToState(
       ProfileContentRefreshRequested event) async* {
-    _feedSubscription?.cancel();
+    _feedSubscriptions[event.section]?.cancel();
     _contents[event.section].clear();
     yield ProfileContentRefreshInProgress(event.section);
 
     int _newContentLength = 0;
-    Stream<UserContent> _contentStream;
+    Map<ProfileSection, Stream<UserContent>> _contentStreams = {
+      ProfileSection.POSTS: _profileRepository?.getPosts(
+        filter: event.filter,
+        limit: event.limit,
+      ),
+      ProfileSection.COMMENTS: _profileRepository?.getComments(
+        filter: event.filter,
+        limit: event.limit,
+      ),
+      ProfileSection.SAVED: _profileRepository?.getSaved(
+        filter: event.filter,
+        limit: event.limit,
+      ),
+      ProfileSection.HIDDEN: _profileRepository?.getHidden(
+        filter: event.filter,
+        limit: event.limit,
+      ),
+      ProfileSection.UPVOTED: _profileRepository?.getUpvoted(
+        filter: event.filter,
+        limit: event.limit,
+      ),
+      ProfileSection.DOWNVOTED: _profileRepository?.getDownvoted(
+        filter: event.filter,
+        limit: event.limit,
+      ),
+    };
 
-    switch (event.section) {
-      case ProfileSection.POSTS:
-        _contentStream = _profileRepository?.getPosts(
-          filter: event.filter,
-          limit: event.limit,
-        );
-        break;
-      case ProfileSection.COMMENTS:
-        _contentStream = _profileRepository?.getComments(
-          filter: event.filter,
-          limit: event.limit,
-        );
-        break;
-      case ProfileSection.SAVED:
-        _contentStream = _profileRepository?.getSaved(
-          filter: event.filter,
-          limit: event.limit,
-        );
-        break;
-      case ProfileSection.HIDDEN:
-        _contentStream = _profileRepository?.getHidden(
-          filter: event.filter,
-          limit: event.limit,
-        );
-        break;
-      case ProfileSection.UPVOTED:
-        _contentStream = _profileRepository?.getUpvoted(
-          filter: event.filter,
-          limit: event.limit,
-        );
-        break;
-      case ProfileSection.DOWNVOTED:
-        _contentStream = _profileRepository?.getDownvoted(
-          filter: event.filter,
-          limit: event.limit,
-        );
-        break;
-      default:
-        break;
-    }
-
-    _feedSubscription = _contentStream?.listen(
+    _feedSubscriptions[event.section] = _contentStreams[event.section]?.listen(
       (content) {
         _contents[event.section].add(content);
         _newContentLength++;
       },
       onDone: () async {
-        add(ProfileContentLoaded(
-          updatedAt: DateTime.now(),
-          content: _contents[event.section],
-          hasReachedMax: _newContentLength < event.limit,
-          section: event.section,
-        ));
         _newContentLength = 0;
         // Cache the _contents
         // to save time when checking if the entry is upvoted
@@ -234,20 +202,26 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           final List<String> ids =
               _contents[event.section].map<String>((c) => c.id).toList();
           _box = await Hive.openBox('cache');
-          _box.put('upvoted', jsonEncode(ids));
+          await _box.put('upvoted', jsonEncode(ids));
         }
         if (event.section == ProfileSection.DOWNVOTED) {
           final List<String> ids =
               _contents[event.section].map<String>((c) => c.id).toList();
           _box = await Hive.openBox('cache');
-          _box.put('downvoted', jsonEncode(ids));
+          await _box.put('downvoted', jsonEncode(ids));
         }
         if (event.section == ProfileSection.SAVED) {
           final List<String> ids =
               _contents[event.section].map<String>((c) => c.id).toList();
           _box = await Hive.openBox('cache');
-          _box.put('saved', jsonEncode(ids));
+          await _box.put('saved', jsonEncode(ids));
         }
+        add(ProfileContentLoaded(
+          updatedAt: DateTime.now(),
+          content: _contents[event.section],
+          hasReachedMax: _newContentLength < event.limit,
+          section: event.section,
+        ));
       },
     );
   }
@@ -255,7 +229,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   @override
   Future<void> close() {
     _authSubscription?.cancel();
-    _feedSubscription?.cancel();
+    _feedSubscriptions.forEach((section, subscription) {
+      subscription?.cancel();
+    });
     return super.close();
   }
 }

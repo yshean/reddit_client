@@ -85,24 +85,21 @@ class _PostCardState extends State<PostCard> {
               if (box.isNotEmpty) {
                 _upvotedIds =
                     List<String>.from(jsonDecode(box.get('upvoted') ?? '[]'));
-                if (_upvotedIds.contains(_submission.id))
-                  setState(() {
-                    _isUpvoted = true;
-                  });
+                setState(() {
+                  _isUpvoted = _upvotedIds.contains(_submission.id);
+                });
 
                 _downvotedIds =
                     List<String>.from(jsonDecode(box.get('downvoted') ?? '[]'));
-                if (_downvotedIds.contains(_submission.id))
-                  setState(() {
-                    _isDownvoted = true;
-                  });
+                setState(() {
+                  _isDownvoted = _downvotedIds.contains(_submission.id);
+                });
 
                 _savedIds =
                     List<String>.from(jsonDecode(box.get('saved') ?? '[]'));
-                if (_savedIds.contains(_submission.id))
-                  setState(() {
-                    _isSaved = true;
-                  });
+                setState(() {
+                  _isSaved = _savedIds.contains(_submission.id);
+                });
               }
             });
           }

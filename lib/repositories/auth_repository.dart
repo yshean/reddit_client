@@ -19,6 +19,19 @@ class AuthRepository {
     yield* _controller.stream;
   }
 
+  Future<void> _initAnonymous() async {
+    // Make sure the data is cleared despite the last logout attempt was successful or not
+    // or when the token expired
+    await Hive.deleteBoxFromDisk('auth');
+    await Hive.deleteBoxFromDisk('cache');
+    authBox = await Hive.openBox('auth');
+    redditClient = await Reddit.createUntrustedReadOnlyInstance(
+      clientId: clientId,
+      userAgent: 'flutter-yshean',
+      deviceId: Uuid().v4(),
+    );
+  }
+
   Future<void> init() async {
     // Try to read from storage if refresh token is available
     authBox = await Hive.openBox('auth');
@@ -30,17 +43,12 @@ class AuthRepository {
         userAgent: 'flutter-yshean',
       );
       final user = await getUser();
-      if (user != null) _controller.add(AuthStatus.authenticated);
+      if (user != null)
+        _controller.add(AuthStatus.authenticated);
+      else
+        await _initAnonymous();
     } else {
-      // Make sure the data is cleared despite the last logout attempt was successful or not
-      await Hive.deleteBoxFromDisk('auth');
-      await Hive.deleteBoxFromDisk('cache');
-      authBox = await Hive.openBox('auth');
-      redditClient = await Reddit.createUntrustedReadOnlyInstance(
-        clientId: clientId,
-        userAgent: 'flutter-yshean',
-        deviceId: Uuid().v4(),
-      );
+      await _initAnonymous();
     }
   }
 
@@ -81,7 +89,11 @@ class AuthRepository {
 
   Future<Redditor> getUser() async {
     if (_user != null) return _user;
-    _user = await redditClient.user.me();
+    try {
+      _user = await redditClient.user.me();
+    } on Exception {
+      return null;
+    }
     return _user;
   }
 
