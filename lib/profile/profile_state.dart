@@ -7,21 +7,30 @@ abstract class ProfileState extends Equatable {
   List<Object> get props => [];
 }
 
-class ProfileContentLoadInProgress extends ProfileState {}
+class ProfileContentLoadInProgress extends ProfileState {
+  final ProfileSection section;
+
+  ProfileContentLoadInProgress(this.section);
+
+  @override
+  List<Object> get props => [section];
+}
 
 class ProfileContentLoadSuccess extends ProfileState {
   final DateTime updatedAt;
-  final List<Submission> feeds;
+  final List<dynamic> feeds;
   final bool hasReachedMax;
+  final ProfileSection section;
 
   ProfileContentLoadSuccess({
     @required this.updatedAt,
     @required this.feeds,
     @required this.hasReachedMax,
+    @required this.section,
   });
 
   @override
-  List<Object> get props => [updatedAt, feeds, hasReachedMax];
+  List<Object> get props => [updatedAt, feeds, hasReachedMax, section];
 }
 
 class ProfileContentLoadFailure extends ProfileState {
@@ -33,4 +42,11 @@ class ProfileContentLoadFailure extends ProfileState {
   List<Object> get props => [error];
 }
 
-class ProfileContentRefreshInProgress extends ProfileState {}
+class ProfileContentRefreshInProgress extends ProfileState {
+  final ProfileSection section;
+
+  ProfileContentRefreshInProgress(this.section);
+
+  @override
+  List<Object> get props => [section];
+}

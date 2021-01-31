@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
 import 'package:reddit_client/subreddit/subreddit_bloc.dart';
@@ -23,6 +24,7 @@ class _SubredditScreenState extends State<SubredditScreen> {
   Completer<void> _refreshCompleter;
   final _scrollViewController = ScrollController();
   bool _showScrollToTopButton = false;
+  final _slidableController = SlidableController();
 
   @override
   void initState() {
@@ -170,7 +172,10 @@ class _SubredditScreenState extends State<SubredditScreen> {
                               }
                               if (index < state.feeds.length) {
                                 final submission = state.feeds[index];
-                                return PostCard(submission: submission);
+                                return PostCard(
+                                  submission: submission,
+                                  slidableController: _slidableController,
+                                );
                               }
                               return null;
                             },

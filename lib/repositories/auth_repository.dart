@@ -12,7 +12,7 @@ class AuthRepository {
   Redditor _user;
   final _controller = StreamController<AuthStatus>();
   Reddit _authClient;
-  Box box;
+  Box authBox;
 
   Stream<AuthStatus> get status async* {
     yield AuthStatus.unauthenticated;
@@ -21,9 +21,9 @@ class AuthRepository {
 
   Future<void> init() async {
     // Try to read from storage if refresh token is available
-    box = await Hive.openBox('auth');
-    if (box.isNotEmpty) {
-      final credentials = box.get('credentials');
+    authBox = await Hive.openBox('auth');
+    if (authBox.isNotEmpty) {
+      final credentials = authBox.get('credentials');
       redditClient = Reddit.restoreAuthenticatedInstance(
         credentials,
         clientId: clientId,
@@ -31,6 +31,10 @@ class AuthRepository {
       );
       _controller.add(AuthStatus.authenticated);
     } else {
+      // Make sure the data is cleared despite the last logout attempt was successful or not
+      await Hive.deleteBoxFromDisk('auth');
+      await Hive.deleteBoxFromDisk('cache');
+      authBox = await Hive.openBox('auth');
       redditClient = await Reddit.createUntrustedReadOnlyInstance(
         clientId: clientId,
         userAgent: 'flutter-yshean',
@@ -51,7 +55,7 @@ class AuthRepository {
   Future<void> login(String authCode) async {
     await _authClient.auth.authorize(authCode);
     // Save the credentials on device
-    box.put('credentials', _authClient.auth.credentials.toJson());
+    authBox.put('credentials', _authClient.auth.credentials.toJson());
     redditClient = _authClient;
     _controller.add(AuthStatus.authenticated);
   }
@@ -63,7 +67,9 @@ class AuthRepository {
       deviceId: Uuid().v4(),
     );
     // Clear the credentials on device
-    await box.deleteFromDisk();
+    await authBox.deleteFromDisk();
+    // Also clear the cache
+    await Hive.deleteBoxFromDisk('cache');
     _authClient = Reddit.createInstalledFlowInstance(
       clientId: clientId,
       userAgent: "flutter-yshean",

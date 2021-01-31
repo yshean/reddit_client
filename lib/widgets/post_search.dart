@@ -2,11 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/post_search/post_search_bloc.dart';
 import 'package:reddit_client/widgets/post_card.dart';
 
 class PostSearch extends SearchDelegate<String> {
+  final _slidableController = SlidableController();
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -73,6 +76,7 @@ class PostSearch extends SearchDelegate<String> {
                 if (index < state.result.length) {
                   return PostCard(
                     submission: state.result[index],
+                    slidableController: _slidableController,
                   );
                 }
                 return null;

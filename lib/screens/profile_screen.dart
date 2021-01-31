@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:reddit_client/auth/auth_bloc.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/profile/profile_bloc.dart';
@@ -19,6 +21,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ProfileSection _selectedSection = DEFAULT_PROFILE_SECTION;
   Completer<void> _refreshCompleter;
   bool _showScrollToTopButton = false;
+  final _slidableController = SlidableController();
 
   Future<void> onRefresh() {
     context.read<ProfileBloc>().add(ProfileContentRefreshRequested(
@@ -163,6 +166,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _refreshCompleter = Completer();
                   }
                 },
+                buildWhen: (_, dynamic state) =>
+                    state?.section == _selectedSection,
                 builder: (context, state) {
                   if (state is ProfileContentLoadInProgress ||
                       state is ProfileContentRefreshInProgress) {
@@ -236,7 +241,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       }
                                       if (index < state.feeds.length) {
                                         final submission = state.feeds[index];
-                                        return PostCard(submission: submission);
+                                        if (submission is Submission)
+                                          return PostCard(
+                                            submission: submission,
+                                            slidableController:
+                                                _slidableController,
+                                          );
                                       }
                                       return null;
                                     },

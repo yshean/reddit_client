@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:draw/draw.dart';
 import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
 import 'package:meta/meta.dart';
 import 'package:reddit_client/auth/auth_bloc.dart';
+import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/repositories/profile_repository.dart';
 import 'package:reddit_client/widgets/profile_section_switcher.dart';
 
@@ -18,10 +21,18 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   StreamSubscription _feedSubscription;
   Redditor _redditor;
   ProfileRepository _profileRepository;
-  List<Submission> _contents = [];
+  Map<ProfileSection, List<dynamic>> _contents = {
+    ProfileSection.POSTS: [],
+    ProfileSection.COMMENTS: [],
+    ProfileSection.SAVED: [],
+    ProfileSection.HIDDEN: [],
+    ProfileSection.UPVOTED: [],
+    ProfileSection.DOWNVOTED: [],
+  };
+  Box _box;
 
   ProfileBloc({@required this.authBloc})
-      : super(ProfileContentLoadInProgress()) {
+      : super(ProfileContentLoadInProgress(DEFAULT_PROFILE_SECTION)) {
     _authSubscription = authBloc.listen((state) {
       if (state is Authenticated) {
         _redditor = state.user;
@@ -39,6 +50,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         feeds: event.content,
         hasReachedMax: event.hasReachedMax,
         updatedAt: event.updatedAt,
+        section: event.section,
       );
     } else if (event is ProfileContentRefreshRequested) {
       yield* _mapProfileContentRefreshRequestedToState(event);
@@ -49,8 +61,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       ProfileContentRequested event) async* {
     _feedSubscription?.cancel();
     if (!event.loadMore) {
-      _contents.clear();
-      yield ProfileContentLoadInProgress();
+      _contents[event.section].clear();
+      yield ProfileContentLoadInProgress(event.section);
     }
 
     int _newContentLength = 0;
@@ -62,7 +74,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           filter: event.filter,
           limit: event.limit,
           after: event.loadMore && _contents.isNotEmpty
-              ? _contents.last.fullname
+              ? _contents[event.section].last.fullname
               : null,
         );
         break;
@@ -71,7 +83,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           filter: event.filter,
           limit: event.limit,
           after: event.loadMore && _contents.isNotEmpty
-              ? _contents.last.fullname
+              ? _contents[event.section].last.fullname
               : null,
         );
         break;
@@ -80,7 +92,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           filter: event.filter,
           limit: event.limit,
           after: event.loadMore && _contents.isNotEmpty
-              ? _contents.last.fullname
+              ? _contents[event.section].last.fullname
               : null,
         );
         break;
@@ -89,7 +101,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           filter: event.filter,
           limit: event.limit,
           after: event.loadMore && _contents.isNotEmpty
-              ? _contents.last.fullname
+              ? _contents[event.section].last.fullname
               : null,
         );
         break;
@@ -98,7 +110,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           filter: event.filter,
           limit: event.limit,
           after: event.loadMore && _contents.isNotEmpty
-              ? _contents.last.fullname
+              ? _contents[event.section].last.fullname
               : null,
         );
         break;
@@ -107,7 +119,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           filter: event.filter,
           limit: event.limit,
           after: event.loadMore && _contents.isNotEmpty
-              ? _contents.last.fullname
+              ? _contents[event.section].last.fullname
               : null,
         );
         break;
@@ -117,16 +129,25 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
     _feedSubscription = _contentStream?.listen(
       (content) {
-        _contents.add(content);
+        _contents[event.section].add(content);
         _newContentLength++;
       },
-      onDone: () {
+      onDone: () async {
         add(ProfileContentLoaded(
           updatedAt: DateTime.now(),
-          content: _contents,
+          content: _contents[event.section],
           hasReachedMax: _newContentLength < event.limit,
+          section: event.section,
         ));
         _newContentLength = 0;
+        // Cache the _contents if the ProfileSection.UPVOTED
+        // to save time when checking if the entry is upvoted
+        if (event.section == ProfileSection.UPVOTED) {
+          final List<String> ids =
+              _contents[event.section].map<String>((c) => c.id).toList();
+          _box = await Hive.openBox('cache');
+          _box.put('upvoted', jsonEncode(ids));
+        }
       },
     );
   }
@@ -134,8 +155,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Stream<ProfileState> _mapProfileContentRefreshRequestedToState(
       ProfileContentRefreshRequested event) async* {
     _feedSubscription?.cancel();
-    _contents.clear();
-    yield ProfileContentRefreshInProgress();
+    _contents[event.section].clear();
+    yield ProfileContentRefreshInProgress(event.section);
 
     int _newContentLength = 0;
     Stream<UserContent> _contentStream;
@@ -183,14 +204,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
     _feedSubscription = _contentStream?.listen(
       (content) {
-        _contents.add(content);
+        _contents[event.section].add(content);
         _newContentLength++;
       },
       onDone: () {
         add(ProfileContentLoaded(
           updatedAt: DateTime.now(),
-          content: _contents,
+          content: _contents[event.section],
           hasReachedMax: _newContentLength < event.limit,
+          section: event.section,
         ));
         _newContentLength = 0;
       },

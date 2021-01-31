@@ -31,17 +31,19 @@ class ProfileContentRequested extends ProfileEvent {
 
 class ProfileContentLoaded extends ProfileEvent {
   final DateTime updatedAt;
-  final List<Submission> content;
+  final List<dynamic> content;
   final bool hasReachedMax;
+  final ProfileSection section;
 
   ProfileContentLoaded({
     @required this.updatedAt,
     @required this.content,
     @required this.hasReachedMax,
+    @required this.section,
   });
 
   @override
-  List<Object> get props => [updatedAt, content, hasReachedMax];
+  List<Object> get props => [updatedAt, content, hasReachedMax, section];
 }
 
 class ProfileContentRefreshRequested extends ProfileEvent {

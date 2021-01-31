@@ -19,6 +19,7 @@ dependencies:
   flutter_bloc: null
   flutter_link_preview: ^1.5.6
   flutter_markdown: ^0.5.2
+  flutter_slidable: ^0.5.7
   hive: ^1.4.4+1
   hive_flutter: ^0.3.1
   html_unescape: ^1.0.2

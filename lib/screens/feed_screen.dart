@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/feed/feed_bloc.dart';
 import 'package:reddit_client/subreddit_search/subreddit_search_bloc.dart';
@@ -20,6 +21,7 @@ class _FeedScreenState extends State<FeedScreen> {
   Completer<void> _refreshCompleter;
   final _scrollViewController = ScrollController();
   bool _showScrollToTopButton = false;
+  final _slidableController = SlidableController();
 
   @override
   void initState() {
@@ -176,7 +178,10 @@ class _FeedScreenState extends State<FeedScreen> {
                               }
                               if (index < state.feeds.length) {
                                 final submission = state.feeds[index];
-                                return PostCard(submission: submission);
+                                return PostCard(
+                                  submission: submission,
+                                  slidableController: _slidableController,
+                                );
                               }
                               return null;
                             },
