@@ -73,6 +73,14 @@ class _PostCardState extends State<PostCard> {
               section: ProfileSection.UPVOTED,
               filter: DEFAULT_PROFILE_FILTER,
             ));
+        context.read<ProfileBloc>().add(ProfileContentRequested(
+              section: ProfileSection.DOWNVOTED,
+              filter: DEFAULT_PROFILE_FILTER,
+            ));
+        context.read<ProfileBloc>().add(ProfileContentRequested(
+              section: ProfileSection.SAVED,
+              filter: DEFAULT_PROFILE_FILTER,
+            ));
       }
     }, builder: (context, authState) {
       return BlocListener<ProfileBloc, ProfileState>(
@@ -105,7 +113,7 @@ class _PostCardState extends State<PostCard> {
           }
         },
         child: Slidable.builder(
-          enabled: authState is Authenticated ? true : false,
+          enabled: authState is Authenticated,
           key: Key(_submission.id),
           controller: widget.slidableController,
           actionPane: SlidableDrawerActionPane(),

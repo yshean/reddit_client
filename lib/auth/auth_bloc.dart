@@ -17,6 +17,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         .listen((status) => add(AuthStatusChanged(status)));
   }
 
+  AuthRepository get authRepository => _authRepository;
+
   @override
   Stream<AuthState> mapEventToState(
     AuthEvent event,

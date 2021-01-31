@@ -20,8 +20,6 @@ class AppView extends StatefulWidget {
 }
 
 class _AppViewState extends State<AppView> {
-  FeedRepository feedRepository;
-  SearchRepository searchRepository;
   final AppRouter _appRouter = AppRouter();
 
   StreamSubscription _sub;
@@ -48,6 +46,7 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
+    // This does not update redditClient when AuthStatus changes
     final redditClient =
         context.select((AuthRepository repository) => repository.redditClient);
     final feedRepository = FeedRepository(redditClient);

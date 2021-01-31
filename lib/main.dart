@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
@@ -25,11 +27,19 @@ void main() async {
   await Hive.initFlutter();
 
   final authRepository = AuthRepository();
-  await authRepository.init();
 
-  runApp(MyApp(
-    authRepository: authRepository,
-  ));
+  runZonedGuarded(() async {
+    await authRepository.init();
+    runApp(MyApp(
+      authRepository: authRepository,
+    ));
+  }, (exception, stackTrace) async {
+    if (exception is FormatException &&
+        exception.message.contains('"error": 401')) {
+      print('force logout');
+      await authRepository.logout();
+    }
+  });
 }
 
 class MyApp extends StatelessWidget {
