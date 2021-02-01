@@ -67,22 +67,7 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(listener: (context, authState) {
-      if (authState is Authenticated) {
-        context.read<ProfileBloc>().add(ProfileContentRequested(
-              section: ProfileSection.UPVOTED,
-              filter: DEFAULT_PROFILE_FILTER,
-            ));
-        context.read<ProfileBloc>().add(ProfileContentRequested(
-              section: ProfileSection.DOWNVOTED,
-              filter: DEFAULT_PROFILE_FILTER,
-            ));
-        context.read<ProfileBloc>().add(ProfileContentRequested(
-              section: ProfileSection.SAVED,
-              filter: DEFAULT_PROFILE_FILTER,
-            ));
-      }
-    }, builder: (context, authState) {
+    return BlocBuilder<AuthBloc, AuthState>(builder: (context, authState) {
       return BlocListener<ProfileBloc, ProfileState>(
         listener: (context, profileState) {
           if (profileState is ProfileContentLoadSuccess &&

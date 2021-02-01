@@ -39,6 +39,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           section: DEFAULT_PROFILE_SECTION,
           filter: DEFAULT_PROFILE_FILTER,
         ));
+    context.read<ProfileBloc>().add(ProfileContentRequested(
+          section: ProfileSection.UPVOTED,
+          filter: DEFAULT_PROFILE_FILTER,
+        ));
+    context.read<ProfileBloc>().add(ProfileContentRequested(
+          section: ProfileSection.DOWNVOTED,
+          filter: DEFAULT_PROFILE_FILTER,
+        ));
+    context.read<ProfileBloc>().add(ProfileContentRequested(
+          section: ProfileSection.SAVED,
+          filter: DEFAULT_PROFILE_FILTER,
+        ));
   }
 
   @override
@@ -67,6 +79,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         listener: (context, state) {
           if (state is Unauthenticated || state is AuthUnknown) {
             Navigator.of(context).pushReplacementNamed('/');
+          }
+          if (state is Authenticated) {
+            context.read<ProfileBloc>().add(ProfileContentRequested(
+                  section: ProfileSection.UPVOTED,
+                  filter: DEFAULT_PROFILE_FILTER,
+                ));
+            context.read<ProfileBloc>().add(ProfileContentRequested(
+                  section: ProfileSection.DOWNVOTED,
+                  filter: DEFAULT_PROFILE_FILTER,
+                ));
+            context.read<ProfileBloc>().add(ProfileContentRequested(
+                  section: ProfileSection.SAVED,
+                  filter: DEFAULT_PROFILE_FILTER,
+                ));
           }
         },
         child: NestedScrollView(
