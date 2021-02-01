@@ -273,6 +273,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             slidableController:
                                                 _slidableController,
                                           );
+                                        // TODO: Also show comments
+                                        return SizedBox.shrink();
                                       }
                                       return null;
                                     },

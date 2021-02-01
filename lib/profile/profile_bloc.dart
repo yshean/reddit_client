@@ -72,47 +72,54 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       yield ProfileContentLoadInProgress(event.section);
     }
 
-    int _newContentLength = 0;
+    Map<ProfileSection, int> _newContentLengths = {
+      ProfileSection.POSTS: 0,
+      ProfileSection.COMMENTS: 0,
+      ProfileSection.SAVED: 0,
+      ProfileSection.HIDDEN: 0,
+      ProfileSection.UPVOTED: 0,
+      ProfileSection.DOWNVOTED: 0,
+    };
     Map<ProfileSection, Stream<UserContent>> _contentStreams = {
       ProfileSection.POSTS: _profileRepository?.getPosts(
         filter: event.filter,
         limit: event.limit,
-        after: event.loadMore && _contents.isNotEmpty
+        after: event.loadMore && _contents[event.section].isNotEmpty
             ? _contents[event.section].last.fullname
             : null,
       ),
       ProfileSection.COMMENTS: _profileRepository?.getComments(
         filter: event.filter,
         limit: event.limit,
-        after: event.loadMore && _contents.isNotEmpty
+        after: event.loadMore && _contents[event.section].isNotEmpty
             ? _contents[event.section].last.fullname
             : null,
       ),
       ProfileSection.SAVED: _profileRepository?.getSaved(
         filter: event.filter,
         limit: event.limit,
-        after: event.loadMore && _contents.isNotEmpty
+        after: event.loadMore && _contents[event.section].isNotEmpty
             ? _contents[event.section].last.fullname
             : null,
       ),
       ProfileSection.HIDDEN: _profileRepository?.getHidden(
         filter: event.filter,
         limit: event.limit,
-        after: event.loadMore && _contents.isNotEmpty
+        after: event.loadMore && _contents[event.section].isNotEmpty
             ? _contents[event.section].last.fullname
             : null,
       ),
       ProfileSection.UPVOTED: _profileRepository?.getUpvoted(
         filter: event.filter,
         limit: event.limit,
-        after: event.loadMore && _contents.isNotEmpty
+        after: event.loadMore && _contents[event.section].isNotEmpty
             ? _contents[event.section].last.fullname
             : null,
       ),
       ProfileSection.DOWNVOTED: _profileRepository?.getDownvoted(
         filter: event.filter,
         limit: event.limit,
-        after: event.loadMore && _contents.isNotEmpty
+        after: event.loadMore && _contents[event.section].isNotEmpty
             ? _contents[event.section].last.fullname
             : null,
       ),
@@ -121,10 +128,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     _feedSubscriptions[event.section] = _contentStreams[event.section]?.listen(
       (content) {
         _contents[event.section].add(content);
-        _newContentLength++;
+        _newContentLengths[event.section]++;
       },
       onDone: () async {
-        _newContentLength = 0;
         // Cache the _contents
         // to save time when checking if the entry is upvoted
         if (event.section == ProfileSection.UPVOTED) {
@@ -148,9 +154,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         add(ProfileContentLoaded(
           updatedAt: DateTime.now(),
           content: _contents[event.section],
-          hasReachedMax: _newContentLength < event.limit,
+          hasReachedMax: _newContentLengths[event.section] < event.limit,
           section: event.section,
         ));
+        _newContentLengths[event.section] = 0;
       },
     );
   }

@@ -39,7 +39,7 @@ class ProfileContentLoadSuccess extends ProfileState {
 
   @override
   String toString() {
-    return 'ProfileContentLoadSuccess(section: $section)';
+    return 'ProfileContentLoadSuccess(section: $section, feeds: ${feeds.length}, hasReachedMax: $hasReachedMax)';
   }
 }
 
