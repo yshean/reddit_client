@@ -22,11 +22,15 @@ class AppView extends StatefulWidget {
 class _AppViewState extends State<AppView> {
   final AppRouter _appRouter = AppRouter();
 
-  StreamSubscription _sub;
+  StreamSubscription _linkSubscription;
+  FeedRepository feedRepository;
+  SearchRepository searchRepository;
+  AuthBloc _authBloc;
+  StreamSubscription _authSubscription;
 
   @override
   void initState() {
-    _sub = getUriLinksStream().listen((Uri uri) async {
+    _linkSubscription = getUriLinksStream().listen((Uri uri) async {
       // Use the uri and warn the user, if it is not correct
       if (uri != null && uri.queryParameters["code"] != null) {
         final authCode = uri.queryParameters["code"];
@@ -35,22 +39,49 @@ class _AppViewState extends State<AppView> {
     }, onError: (err) {
       // Handle exception by warning the user their action did not succeed
     });
+    _authBloc = context.read<AuthBloc>();
+    _authBloc.listen((state) {
+      final redditClient = _authBloc.authRepository.redditClient;
+      if (state is Authenticated ||
+          state is Unauthenticated ||
+          state is AuthUnknown) {
+        setState(() {
+          feedRepository = FeedRepository(redditClient);
+          searchRepository = SearchRepository(redditClient);
+        });
+      }
+    });
     super.initState();
   }
 
   @override
   void dispose() {
-    _sub.cancel();
+    _linkSubscription?.cancel();
+    _authSubscription?.cancel();
+    _authBloc?.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     // This does not update redditClient when AuthStatus changes
-    final redditClient =
-        context.select((AuthRepository repository) => repository.redditClient);
-    final feedRepository = FeedRepository(redditClient);
-    final searchRepository = SearchRepository(redditClient);
+    // final redditClient =
+    //     context.select((AuthRepository repository) => repository.redditClient);
+    // final feedRepository = FeedRepository(redditClient);
+    // final searchRepository = SearchRepository(redditClient);
+    if (feedRepository == null || searchRepository == null) {
+      return MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Container(
+              width: 300,
+              height: 300,
+              child: Image.asset('assets/icons/amber_splash.png'),
+            ),
+          ),
+        ),
+      );
+    }
 
     return MultiBlocProvider(
       providers: [

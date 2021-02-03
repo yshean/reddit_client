@@ -66,7 +66,7 @@ class PostInfo extends StatelessWidget {
             ),
             SizedBox(width: 2),
             Text(
-              post.upvotes.toString(),
+              post.score.toString(),
               style: TextStyle(
                 color: Colors.grey,
                 fontWeight: FontWeight.w600,

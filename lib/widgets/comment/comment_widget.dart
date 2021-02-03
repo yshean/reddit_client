@@ -192,24 +192,14 @@ class ExpandedComment extends StatefulWidget {
 class _ExpandedCommentState extends State<ExpandedComment> {
   bool _isUpvoted = false;
   bool _isDownvoted = false;
+  bool _isSaved = false;
 
   @override
   void initState() {
     super.initState();
-    // Get the state of the comment
-    // Hive.openBox('cache').then((box) {
-    //   if (box.isNotEmpty) {
-    //     _upvotedIds = List<String>.from(jsonDecode(box.get('upvoted') ?? '[]'));
-    //     if (_upvotedIds.contains(_submission.id)) _isUpvoted = true;
-
-    //     _downvotedIds =
-    //         List<String>.from(jsonDecode(box.get('downvoted') ?? '[]'));
-    //     if (_downvotedIds.contains(_submission.id)) _isDownvoted = true;
-
-    //     _savedIds = List<String>.from(jsonDecode(box.get('saved') ?? '[]'));
-    //     if (_savedIds.contains(_submission.id)) _isSaved = true;
-    //   }
-    // });
+    _isUpvoted = widget.comment.data['likes'] == true;
+    _isDownvoted = widget.comment.data['likes'] == false;
+    _isSaved = widget.comment.saved;
   }
 
   @override
@@ -223,7 +213,7 @@ class _ExpandedCommentState extends State<ExpandedComment> {
             key: Key(widget.comment.id),
             actionPane: SlidableDrawerActionPane(),
             secondaryActionDelegate: SlideActionBuilderDelegate(
-                actionCount: 2,
+                actionCount: 3,
                 builder: (context, index, animation, renderingMode) {
                   if (index == 0)
                     return IconSlideAction(
@@ -242,16 +232,7 @@ class _ExpandedCommentState extends State<ExpandedComment> {
                         } else {
                           await widget.comment.upvote();
                         }
-
-                        // Also refetch upvoted/downvoted ids
-                        // context.read<ProfileBloc>().add(ProfileContentRequested(
-                        //       section: ProfileSection.UPVOTED,
-                        //       filter: DEFAULT_PROFILE_FILTER,
-                        //     ));
-                        // context.read<ProfileBloc>().add(ProfileContentRequested(
-                        //       section: ProfileSection.DOWNVOTED,
-                        //       filter: DEFAULT_PROFILE_FILTER,
-                        //     ));
+                        widget.comment.refresh();
                         Slidable.of(context).close();
                       },
                       closeOnTap: false,
@@ -273,15 +254,26 @@ class _ExpandedCommentState extends State<ExpandedComment> {
                         } else {
                           await widget.comment.downvote();
                         }
-                        // Also refetch upvoted & downvoted ids
-                        // context.read<ProfileBloc>().add(ProfileContentRequested(
-                        //       section: ProfileSection.UPVOTED,
-                        //       filter: DEFAULT_PROFILE_FILTER,
-                        //     ));
-                        // context.read<ProfileBloc>().add(ProfileContentRequested(
-                        //       section: ProfileSection.DOWNVOTED,
-                        //       filter: DEFAULT_PROFILE_FILTER,
-                        //     ));
+                        widget.comment.refresh();
+                        Slidable.of(context).close();
+                      },
+                      closeOnTap: false,
+                    );
+                  if (index == 2)
+                    return IconSlideAction(
+                      caption: _isSaved ? 'Saved' : 'Save',
+                      color: Colors.amberAccent,
+                      icon: _isSaved ? Icons.check : Icons.star_border,
+                      onTap: () async {
+                        setState(() {
+                          _isSaved = !_isSaved;
+                        });
+                        if (!_isSaved) {
+                          await widget.comment.unsave();
+                        } else {
+                          await widget.comment.save();
+                        }
+                        widget.comment.refresh();
                         Slidable.of(context).close();
                       },
                       closeOnTap: false,
@@ -342,7 +334,7 @@ class _ExpandedCommentState extends State<ExpandedComment> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Text(
-                                widget.comment.upvotes.toString(),
+                                widget.comment.score.toString(),
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w600,

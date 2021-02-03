@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:draw/draw.dart';
 import 'package:equatable/equatable.dart';
-import 'package:hive/hive.dart';
 import 'package:meta/meta.dart';
 import 'package:reddit_client/auth/auth_bloc.dart';
 import 'package:reddit_client/constants.dart';
@@ -36,7 +34,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileSection.UPVOTED: [],
     ProfileSection.DOWNVOTED: [],
   };
-  Box _box;
 
   ProfileBloc({@required this.authBloc})
       : super(ProfileContentLoadInProgress(DEFAULT_PROFILE_SECTION)) {
@@ -131,26 +128,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         _newContentLengths[event.section]++;
       },
       onDone: () async {
-        // Cache the _contents
-        // to save time when checking if the entry is upvoted
-        if (event.section == ProfileSection.UPVOTED) {
-          final List<String> ids =
-              _contents[event.section].map<String>((c) => c.id).toList();
-          _box = await Hive.openBox('cache');
-          await _box.put('upvoted', jsonEncode(ids));
-        }
-        if (event.section == ProfileSection.DOWNVOTED) {
-          final List<String> ids =
-              _contents[event.section].map<String>((c) => c.id).toList();
-          _box = await Hive.openBox('cache');
-          await _box.put('downvoted', jsonEncode(ids));
-        }
-        if (event.section == ProfileSection.SAVED) {
-          final List<String> ids =
-              _contents[event.section].map<String>((c) => c.id).toList();
-          _box = await Hive.openBox('cache');
-          await _box.put('saved', jsonEncode(ids));
-        }
         add(ProfileContentLoaded(
           updatedAt: DateTime.now(),
           content: _contents[event.section],
@@ -203,26 +180,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       },
       onDone: () async {
         _newContentLength = 0;
-        // Cache the _contents
-        // to save time when checking if the entry is upvoted
-        if (event.section == ProfileSection.UPVOTED) {
-          final List<String> ids =
-              _contents[event.section].map<String>((c) => c.id).toList();
-          _box = await Hive.openBox('cache');
-          await _box.put('upvoted', jsonEncode(ids));
-        }
-        if (event.section == ProfileSection.DOWNVOTED) {
-          final List<String> ids =
-              _contents[event.section].map<String>((c) => c.id).toList();
-          _box = await Hive.openBox('cache');
-          await _box.put('downvoted', jsonEncode(ids));
-        }
-        if (event.section == ProfileSection.SAVED) {
-          final List<String> ids =
-              _contents[event.section].map<String>((c) => c.id).toList();
-          _box = await Hive.openBox('cache');
-          await _box.put('saved', jsonEncode(ids));
-        }
         add(ProfileContentLoaded(
           updatedAt: DateTime.now(),
           content: _contents[event.section],

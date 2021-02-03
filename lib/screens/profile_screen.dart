@@ -39,18 +39,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           section: DEFAULT_PROFILE_SECTION,
           filter: DEFAULT_PROFILE_FILTER,
         ));
-    context.read<ProfileBloc>().add(ProfileContentRequested(
-          section: ProfileSection.UPVOTED,
-          filter: DEFAULT_PROFILE_FILTER,
-        ));
-    context.read<ProfileBloc>().add(ProfileContentRequested(
-          section: ProfileSection.DOWNVOTED,
-          filter: DEFAULT_PROFILE_FILTER,
-        ));
-    context.read<ProfileBloc>().add(ProfileContentRequested(
-          section: ProfileSection.SAVED,
-          filter: DEFAULT_PROFILE_FILTER,
-        ));
   }
 
   @override

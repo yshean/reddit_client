@@ -1,13 +1,9 @@
-import 'dart:convert';
-
 import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:hive/hive.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:reddit_client/auth/auth_bloc.dart';
-import 'package:reddit_client/constants.dart';
 import 'package:reddit_client/profile/profile_bloc.dart';
 import 'package:reddit_client/screens/post_details.dart';
 import 'package:reddit_client/utils/convert_whitespace_char.dart';
@@ -33,31 +29,14 @@ class _PostCardState extends State<PostCard> {
   bool _isUpvoted;
   bool _isDownvoted;
   bool _isSaved;
-  List<String> _upvotedIds;
-  List<String> _downvotedIds;
-  List<String> _savedIds;
 
   @override
   void initState() {
     super.initState();
     _submission = widget.submission;
-    _isUpvoted = false;
-    _isDownvoted = false;
-    _isSaved = false;
-    // Get the state of the submission
-    Hive.openBox('cache').then((box) {
-      if (box.isNotEmpty) {
-        _upvotedIds = List<String>.from(jsonDecode(box.get('upvoted') ?? '[]'));
-        if (_upvotedIds.contains(_submission.id)) _isUpvoted = true;
-
-        _downvotedIds =
-            List<String>.from(jsonDecode(box.get('downvoted') ?? '[]'));
-        if (_downvotedIds.contains(_submission.id)) _isDownvoted = true;
-
-        _savedIds = List<String>.from(jsonDecode(box.get('saved') ?? '[]'));
-        if (_savedIds.contains(_submission.id)) _isSaved = true;
-      }
-    });
+    _isUpvoted = _submission.data['likes'] == true;
+    _isDownvoted = _submission.data['likes'] == false;
+    _isSaved = _submission.saved;
   }
 
   String get thumbnailSrc =>
@@ -74,26 +53,10 @@ class _PostCardState extends State<PostCard> {
               (profileState.section == ProfileSection.UPVOTED ||
                   profileState.section == ProfileSection.DOWNVOTED ||
                   profileState.section == ProfileSection.SAVED)) {
-            Hive.openBox('cache').then((box) {
-              if (box.isNotEmpty) {
-                _upvotedIds =
-                    List<String>.from(jsonDecode(box.get('upvoted') ?? '[]'));
-                setState(() {
-                  _isUpvoted = _upvotedIds.contains(_submission.id);
-                });
-
-                _downvotedIds =
-                    List<String>.from(jsonDecode(box.get('downvoted') ?? '[]'));
-                setState(() {
-                  _isDownvoted = _downvotedIds.contains(_submission.id);
-                });
-
-                _savedIds =
-                    List<String>.from(jsonDecode(box.get('saved') ?? '[]'));
-                setState(() {
-                  _isSaved = _savedIds.contains(_submission.id);
-                });
-              }
+            setState(() {
+              _isUpvoted = _submission.data['likes'] == true;
+              _isDownvoted = _submission.data['likes'] == false;
+              _isSaved = _submission.saved;
             });
           }
         },
@@ -122,16 +85,7 @@ class _PostCardState extends State<PostCard> {
                       } else {
                         await _submission.upvote();
                       }
-
-                      // Also refetch upvoted/downvoted ids
-                      context.read<ProfileBloc>().add(ProfileContentRequested(
-                            section: ProfileSection.UPVOTED,
-                            filter: DEFAULT_PROFILE_FILTER,
-                          ));
-                      context.read<ProfileBloc>().add(ProfileContentRequested(
-                            section: ProfileSection.DOWNVOTED,
-                            filter: DEFAULT_PROFILE_FILTER,
-                          ));
+                      _submission.refresh();
                       Slidable.of(context).close();
                     },
                     closeOnTap: false,
@@ -153,15 +107,7 @@ class _PostCardState extends State<PostCard> {
                       } else {
                         await _submission.downvote();
                       }
-                      // Also refetch upvoted & downvoted ids
-                      context.read<ProfileBloc>().add(ProfileContentRequested(
-                            section: ProfileSection.UPVOTED,
-                            filter: DEFAULT_PROFILE_FILTER,
-                          ));
-                      context.read<ProfileBloc>().add(ProfileContentRequested(
-                            section: ProfileSection.DOWNVOTED,
-                            filter: DEFAULT_PROFILE_FILTER,
-                          ));
+                      _submission.refresh();
                       Slidable.of(context).close();
                     },
                     closeOnTap: false,
@@ -180,11 +126,7 @@ class _PostCardState extends State<PostCard> {
                       } else {
                         await _submission.save();
                       }
-                      // Also refetch saved ids
-                      context.read<ProfileBloc>().add(ProfileContentRequested(
-                            section: ProfileSection.SAVED,
-                            filter: DEFAULT_PROFILE_FILTER,
-                          ));
+                      _submission.refresh();
                       Slidable.of(context).close();
                     },
                     closeOnTap: false,
@@ -299,7 +241,7 @@ class _PostCardState extends State<PostCard> {
                                         ),
                                         SizedBox(width: 4),
                                         Text(
-                                          _submission.upvotes.toString(),
+                                          _submission.score.toString(),
                                           style: TextStyle(
                                             color: Colors.grey,
                                             fontWeight: FontWeight.w600,
