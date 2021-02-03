@@ -37,7 +37,7 @@ To run this app, you need to create an app in [Reddit preferences](https://www.r
         - [x] Collapse comments
         - [x] Pull to refresh comments
         - [ ] Post a comment / reply to a comment
-        - [ ] Upvote/downvote a comment
+        - [x] Upvote/downvote/save a comment
         - [x] Expand comments
         - [x] Refine comment layout
 - [ ] Authentication
