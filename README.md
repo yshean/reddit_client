@@ -1,6 +1,6 @@
 # reddit_client
 
-A Reddit client built with Flutter using Streams and BLoC pattern.
+A Reddit client built with Flutter using Streams and BLoC pattern. I'm using this as a practice to build my understanding on BLoC. Suggestions, issues and PRs are welcomed!
 
 ## Get started
 
@@ -63,3 +63,7 @@ To run this app, you need to create an app in [Reddit preferences](https://www.r
 - [ ] Shows error if connection timeout
 - [ ] Realtime Reddit feed
 - [ ] Share buttons
+
+### Special credit
+
+Thanks to [Gloumy/diaporama](https://github.com/Gloumy/diaporama) for open sourcing the app. I learned a lot and also shamelessly _referred_ some of the codes from there.
