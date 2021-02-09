@@ -2,10 +2,9 @@
 
 A Reddit client built with Flutter using Streams and BLoC pattern. I'm using this as a practice to build my understanding on BLoC. Suggestions, issues and PRs are welcomed!
 
-![Frontpage](./screenshots/screenshot_1.png =200x)
-![Details](./screenshots/screenshot_2.png =200x)
-![Drawer](./screenshots/screenshot_3.png =200x)
-![Profile](./screenshots/screenshot_4.png =200x)
+<img src="screenshots/screenshot_1.png" width="380" alt="Frontpage" />. <img src="screenshots/screenshot_2.png" width="380" alt="Details" />
+<img src="screenshots/screenshot_3.png" width="380" alt="Drawer" />. <img src="screenshots/screenshot_4.png" width="380" alt="Profile" />
+
 ## Get started
 
 To run this app, you need to create an app in [Reddit preferences](https://www.reddit.com/prefs/apps/). Make sure you choose `installed app`. Take note of the token - you need to put it into `secrets.example.dart`, then rename the file to `secrets.dart`.
